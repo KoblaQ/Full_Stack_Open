@@ -1,16 +1,20 @@
 import { useState } from "react";
 
+// Button component
 const Button = ({ onClick, text }) => {
   return <button onClick={onClick}>{text}</button>;
 };
 
-const Statistics = (props) => {
-  // calculate statistics
+// Statistics component
+const Statistics = ({ good, neutral, bad }) => {
   return (
     <div>
-      <p>good {props.good}</p>
-      <p>neutral {props.neutral}</p>
-      <p>bad {props.bad}</p>
+      <p>good {good}</p>
+      <p>neutral {neutral}</p>
+      <p>bad {bad}</p>
+      <p>all {good + neutral + bad}</p>
+      <p>average {(good - bad) / (good + neutral + bad) || 0}</p>
+      <p>positive {(good / (good + neutral + bad)) * 100 || 0} %</p>
     </div>
   );
 };
