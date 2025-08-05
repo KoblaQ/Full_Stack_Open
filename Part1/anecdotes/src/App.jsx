@@ -1,6 +1,32 @@
 import { use } from "react";
 import { useState } from "react";
 
+// Button component
+const Button = ({ onClick, text }) => {
+  return <button onClick={onClick}>{text}</button>;
+};
+
+// Most votes anecdote component
+const MostVotes = ({ anecdotes, votes }) => {
+  const maxVotes = Math.max(...Object.values(votes));
+  const maxVotesKey = Object.keys(votes).find((key) => votes[key] === maxVotes);
+  const maxVotesAnecdote =
+    anecdotes[
+      Object.keys(votes).reduce((a, b) => (votes[a] > votes[b] ? a : b))
+    ];
+
+  if (maxVotes === 0) {
+    return <div>No votes yet</div>;
+  }
+  return (
+    <div>
+      <h1>Anecdote with most votes</h1>
+      <p>{maxVotesAnecdote}</p>
+      <p>has {votes[maxVotesKey]} votes</p>
+    </div>
+  );
+};
+
 const App = () => {
   const anecdotes = [
     "If it hurts, do it more often.",
@@ -28,22 +54,22 @@ const App = () => {
   const handleNextAnecdote = () => {
     const randomNumber = Math.floor(Math.random() * anecdotes.length);
     setSelected(randomNumber);
-    console.log(`Selected anecdote index: ${randomNumber}`);
   };
 
   const handleVote = () => {
     const copy = { ...votes };
     copy[selected] += 1;
     setVotes(copy);
-    votes[selected] += 1;
-    console.log(`Votes for anecdote ${selected}: ${votes[selected]}`);
-    console.log(`Current votes: ${JSON.stringify(votes)}`);
   };
+
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
-      <button onClick={handleVote}>vote</button>
-      <button onClick={handleNextAnecdote}>Next Anecdote</button>
+      <p>has {votes[selected]} votes</p>
+      <Button onClick={handleVote} text="vote" />
+      <Button onClick={handleNextAnecdote} text="Next Anecdote" />
+      <MostVotes anecdotes={anecdotes} votes={votes} />
     </div>
   );
 };
