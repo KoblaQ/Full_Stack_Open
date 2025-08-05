@@ -5,16 +5,35 @@ const Button = ({ onClick, text }) => {
   return <button onClick={onClick}>{text}</button>;
 };
 
+// StatisticLine component
+const StatisticLine = ({ text, value }) => {
+  return (
+    <p>
+      {text} {value}
+    </p>
+  );
+};
+
 // Statistics component
 const Statistics = ({ good, neutral, bad }) => {
+  // if no feedback is given, return a message
+  if (good + neutral + bad === 0) {
+    return <div>No feedback given</div>;
+  }
   return (
     <div>
-      <p>good {good}</p>
-      <p>neutral {neutral}</p>
-      <p>bad {bad}</p>
-      <p>all {good + neutral + bad}</p>
-      <p>average {(good - bad) / (good + neutral + bad) || 0}</p>
-      <p>positive {(good / (good + neutral + bad)) * 100 || 0} %</p>
+      <StatisticLine text="good" value={good} />
+      <StatisticLine text="neutral" value={neutral} />
+      <StatisticLine text="bad" value={bad} />
+      <StatisticLine text={"all"} value={good + neutral + bad} />
+      <StatisticLine
+        text="average"
+        value={(good - bad) / (good + neutral + bad) || 0}
+      />
+      <StatisticLine
+        text="positive"
+        value={(good / (good + neutral + bad)) * 100 || 0}
+      />
     </div>
   );
 };
