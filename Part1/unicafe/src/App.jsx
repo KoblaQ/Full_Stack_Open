@@ -5,35 +5,43 @@ const Button = ({ onClick, text }) => {
   return <button onClick={onClick}>{text}</button>;
 };
 
-// StatisticLine component
+// Header component
+const Header = ({ text }) => {
+  return <h1>{text}</h1>;
+};
+
+// StatisticLine component (refactored to display table rows)
 const StatisticLine = ({ text, value }) => {
   return (
-    <p>
-      {text} {value}
-    </p>
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
   );
 };
 
 // Statistics component
 const Statistics = ({ good, neutral, bad }) => {
+  const all = good + neutral + bad;
+  const average = (good - bad) / all || 0;
+  const positive = (good / all) * 100 || 0;
+
   // if no feedback is given, return a message
-  if (good + neutral + bad === 0) {
+  if (all === 0) {
     return <div>No feedback given</div>;
   }
   return (
     <div>
-      <StatisticLine text="good" value={good} />
-      <StatisticLine text="neutral" value={neutral} />
-      <StatisticLine text="bad" value={bad} />
-      <StatisticLine text={"all"} value={good + neutral + bad} />
-      <StatisticLine
-        text="average"
-        value={(good - bad) / (good + neutral + bad) || 0}
-      />
-      <StatisticLine
-        text="positive"
-        value={(good / (good + neutral + bad)) * 100 || 0}
-      />
+      <table>
+        <tbody>
+          <StatisticLine text="good" value={good} />
+          <StatisticLine text="neutral" value={neutral} />
+          <StatisticLine text="bad" value={bad} />
+          <StatisticLine text={"all"} value={all} />
+          <StatisticLine text="average" value={average} />
+          <StatisticLine text="positive" value={positive} />
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -66,11 +74,11 @@ const App = () => {
   };
   return (
     <div>
-      <h1>give feedback</h1>
+      <Header text="give feedback" />
       <Button onClick={handleGoodClick} text={"good"} />
       <Button onClick={handleNeutralClick} text={"neutral"} />
       <Button onClick={handleBadClick} text={"bad"} />
-      <h1>statistics</h1>
+      <Header text="statistics" />
       <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   );
