@@ -1,3 +1,3 @@
-const Total = (props) => <p>Number of exercises {props.total}</p>;
+const Total = (props) => <strong>total of {props.total} exercises</strong>;
 
 export default Total;
