@@ -1,8 +1,11 @@
 import { useState } from "react";
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", number: "123-333-4455" },
+  ]);
   const [newName, setNewName] = useState("");
+  const [newNumber, setNewNumber] = useState("");
 
   // Add a new name
   const addNewName = (event) => {
@@ -19,11 +22,13 @@ const App = () => {
     // new person object
     const newPersonObject = {
       name: newName,
+      number: newNumber,
     };
 
     setPersons(persons.concat(newPersonObject));
 
     setNewName(""); // Clear the input field after submission
+    setNewNumber("");
     // console.log(persons);
   };
 
@@ -33,12 +38,19 @@ const App = () => {
     setNewName(event.target.value);
   };
 
+  // Set a new number
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value);
+  };
+
   // Numbers component for displaying the list
   const Numbers = ({ persons }) => {
     return (
       <div>
         {persons.map((person) => (
-          <p key={person.name}>{person.name}</p>
+          <p key={person.name}>
+            {person.name} {person.number}
+          </p>
         ))}
       </div>
     );
@@ -47,9 +59,12 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addNewName} onChange={handleNameChange}>
+      <form onSubmit={addNewName}>
         <div>
-          name: <input value={newName} />
+          name: <input value={newName} onChange={handleNameChange} />
+        </div>
+        <div>
+          number: <input value={newNumber} onChange={handleNumberChange} />
         </div>
         <div>
           <button type="submit">add</button>
@@ -59,10 +74,14 @@ const App = () => {
       {/* <Numbers persons={persons} /> */}
       <div>
         {persons.map((person) => (
-          <p key={person.name}>{person.name}</p>
+          <p key={person.name}>
+            {person.name} {person.number}
+          </p>
         ))}
       </div>
-      <div>debug: {newName}</div>
+      <div>
+        debug: {newName} {newNumber}
+      </div>
     </div>
   );
 };
