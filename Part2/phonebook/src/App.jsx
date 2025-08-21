@@ -9,6 +9,13 @@ const App = () => {
     event.preventDefault();
     // setNewName(event.target.value);
 
+    //Check for duplicates
+    const isDuplicate = persons.some((person) => person.name === newName);
+    if (isDuplicate) {
+      alert(`${newName} is already added to phonebook`);
+      return;
+    }
+
     // new person object
     const newPersonObject = {
       name: newName,
@@ -16,7 +23,7 @@ const App = () => {
 
     setPersons(persons.concat(newPersonObject));
 
-    event.target[0].value = ""; // Clear the input field after submission
+    setNewName(""); // Clear the input field after submission
     // console.log(persons);
   };
 
@@ -42,7 +49,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <form onSubmit={addNewName} onChange={handleNameChange}>
         <div>
-          name: <input />
+          name: <input value={newName} />
         </div>
         <div>
           <button type="submit">add</button>
