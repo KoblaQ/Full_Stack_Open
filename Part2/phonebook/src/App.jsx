@@ -1,62 +1,8 @@
 import { useEffect, useState } from "react";
-// import axios from "axios";
 import personService from "./services/persons";
-
-// Single person component
-const Person = ({ persons, handleDeletePerson }) => {
-  return persons.map((person) => (
-    <p key={person.name}>
-      {person.name} {person.number}{" "}
-      <button onClick={() => handleDeletePerson(person.id)}>delete</button>
-    </p>
-  ));
-};
-
-// PERSONS component for displaying the list
-const Persons = ({ persons, handleDeletePerson }) => {
-  return (
-    <div>
-      <Person persons={persons} handleDeletePerson={handleDeletePerson} />
-    </div>
-  );
-};
-
-// PersonForm Component
-const PersonForm = ({
-  newName,
-  newNumber,
-  handleNameChange,
-  handleNumberChange,
-  addNewName,
-}) => {
-  return (
-    <form onSubmit={addNewName}>
-      <div>
-        name: <input value={newName} onChange={handleNameChange} />
-      </div>
-      <div>
-        number: <input value={newNumber} onChange={handleNumberChange} />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  );
-};
-
-// Filter Component
-const Filter = ({ filter, handleFilterChange }) => {
-  return (
-    <div>
-      Filter shown with{""}
-      <input
-        placeholder="Search phonebook"
-        value={filter}
-        onChange={handleFilterChange}
-      />
-    </div>
-  );
-};
+import Persons from "./components/Persons";
+import PersonForm from "./components/PersonForm";
+import Filter from "./components/Filter";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -90,7 +36,6 @@ const App = () => {
       ) {
         const person = persons.find((p) => p.name === newName);
         const changedPerson = { ...person, number: newNumber };
-        // const id = person.id;
 
         console.log(
           `Updating person number from ${person.number} to ${changedPerson.number}`
