@@ -3,12 +3,14 @@ import personService from "./services/persons";
 import Persons from "./components/Persons";
 import PersonForm from "./components/PersonForm";
 import Filter from "./components/Filter";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [notification, setNotification] = useState(null);
 
   // Use effect getting data from the server.
   useEffect(() => {
@@ -61,6 +63,10 @@ const App = () => {
 
     // Add new person to the database
     personService.create(newPersonObject).then((returnedPerson) => {
+      setNotification(`Added ${returnedPerson.name}`);
+      setTimeout(() => {
+        setNotification(null);
+      }, 3000);
       setPersons(persons.concat(returnedPerson));
     });
 
@@ -106,6 +112,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h3>Add a new</h3>
       <PersonForm
