@@ -11,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
   const [notification, setNotification] = useState(null);
+  const [notificationType, setNotificationType] = useState("success");
 
   // Use effect getting data from the server.
   useEffect(() => {
@@ -26,6 +27,12 @@ const App = () => {
   const addNewName = (event) => {
     event.preventDefault();
     // setNewName(event.target.value);
+
+    // new person object
+    const newPersonObject = {
+      name: newName,
+      number: newNumber,
+    };
 
     //Check for duplicates
     const isDuplicate = persons.some((person) => person.name === newName);
@@ -48,31 +55,35 @@ const App = () => {
             setPersons(
               persons.map((p) => (p.id === person.id ? returnedPerson : p))
             );
+          })
+          .catch((error) => {
+            setNotification(
+              `Information of ${person.name} has already been removed from server`
+            );
+            setNotificationType("error");
+            setTimeout(() => {
+              setNotification(null);
+            }, 3000);
+            setPersons(persons.filter((p) => p.id !== person.id));
           });
         setNewName(""); // Clear the input field after submission
         setNewNumber("");
       }
-      return;
+    } else {
+      // Add new person to the database
+      personService.create(newPersonObject).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+      });
     }
 
-    // new person object
-    const newPersonObject = {
-      name: newName,
-      number: newNumber,
-    };
-
-    // Add new person to the database
-    personService.create(newPersonObject).then((returnedPerson) => {
-      setNotification(`Added ${returnedPerson.name}`);
-      setTimeout(() => {
-        setNotification(null);
-      }, 3000);
-      setPersons(persons.concat(returnedPerson));
-    });
-
+    // Update notification
+    setNotification(`Added ${newPersonObject.name}`);
+    setNotificationType("success");
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
     setNewName(""); // Clear the input field after submission
     setNewNumber("");
-    // console.log(persons);
   };
 
   // Set a new name
@@ -112,7 +123,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notification} />
+      <Notification
+        message={notification}
+        notificationType={notificationType}
+      />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h3>Add a new</h3>
       <PersonForm
