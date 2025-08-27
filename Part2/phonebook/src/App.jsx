@@ -82,7 +82,29 @@ const App = () => {
     //Check for duplicates
     const isDuplicate = persons.some((person) => person.name === newName);
     if (isDuplicate) {
-      alert(`${newName} is already added to phonebook`);
+      // alert(`${newName} is already added to phonebook`);
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const person = persons.find((p) => p.name === newName);
+        const changedPerson = { ...person, number: newNumber };
+        // const id = person.id;
+
+        console.log(
+          `Updating person number from ${person.number} to ${changedPerson.number}`
+        );
+        personService
+          .update(person.id, changedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((p) => (p.id === person.id ? returnedPerson : p))
+            );
+          });
+        setNewName(""); // Clear the input field after submission
+        setNewNumber("");
+      }
       return;
     }
 
@@ -96,13 +118,6 @@ const App = () => {
     personService.create(newPersonObject).then((returnedPerson) => {
       setPersons(persons.concat(returnedPerson));
     });
-    // axios
-    //   .post("http://localhost:3001/persons", newPersonObject)
-    //   .then((response) => {
-    //     setPersons(persons.concat(response.data));
-    //   });
-
-    // setPersons(persons.concat(newPersonObject));
 
     setNewName(""); // Clear the input field after submission
     setNewNumber("");
