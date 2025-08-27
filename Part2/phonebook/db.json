@@ -19,6 +19,21 @@
       "name": "Mary Poppendieck",
       "number": "39-23-6423122",
       "id": "4"
+    },
+    {
+      "id": "d9ad",
+      "name": "Edem",
+      "number": "1234"
+    },
+    {
+      "id": "36d1",
+      "name": "New edem",
+      "number": "22222"
+    },
+    {
+      "id": "fa02",
+      "name": "Second new note",
+      "number": "12345"
     }
   ]
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
+import personService from "./services/persons";
 
 // Single person component
 const Person = ({ persons }) => {
@@ -62,11 +63,12 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
 
+  // Use effect getting data from the server.
   useEffect(() => {
     console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
+    personService.getAll().then((initialPersons) => {
       console.log("promise fulfilled");
-      setPersons(response.data);
+      setPersons(initialPersons);
     });
   }, []);
   console.log("render", persons.length, "notes");
@@ -89,7 +91,17 @@ const App = () => {
       number: newNumber,
     };
 
-    setPersons(persons.concat(newPersonObject));
+    // Add new person to the database
+    personService.create(newPersonObject).then((returnedPerson) => {
+      setPersons(persons.concat(returnedPerson));
+    });
+    // axios
+    //   .post("http://localhost:3001/persons", newPersonObject)
+    //   .then((response) => {
+    //     setPersons(persons.concat(response.data));
+    //   });
+
+    // setPersons(persons.concat(newPersonObject));
 
     setNewName(""); // Clear the input field after submission
     setNewNumber("");
