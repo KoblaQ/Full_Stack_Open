@@ -3,19 +3,20 @@ import { useEffect, useState } from "react";
 import personService from "./services/persons";
 
 // Single person component
-const Person = ({ persons }) => {
+const Person = ({ persons, handleDeletePerson }) => {
   return persons.map((person) => (
     <p key={person.name}>
-      {person.name} {person.number}
+      {person.name} {person.number}{" "}
+      <button onClick={() => handleDeletePerson(person.id)}>delete</button>
     </p>
   ));
 };
 
 // PERSONS component for displaying the list
-const Persons = ({ persons }) => {
+const Persons = ({ persons, handleDeletePerson }) => {
   return (
     <div>
-      <Person persons={persons} />
+      <Person persons={persons} handleDeletePerson={handleDeletePerson} />
     </div>
   );
 };
@@ -124,6 +125,16 @@ const App = () => {
     setFilter(event.target.value);
   };
 
+  // handle delete person
+  const handleDeletePerson = (id) => {
+    const person = persons.find((p) => p.id === id);
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      personService.deletePerson(id).then((returnedPerson) => {
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
+  };
+
   // List of persons to show after search
   const filteredPersons =
     filter === ""
@@ -146,7 +157,10 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons} />
+      <Persons
+        persons={filteredPersons}
+        handleDeletePerson={handleDeletePerson}
+      />
     </div>
   );
 };
