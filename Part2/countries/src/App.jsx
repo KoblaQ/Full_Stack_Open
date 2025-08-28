@@ -4,6 +4,7 @@ import axios from "axios";
 function App() {
   const [countriesList, setCountriesList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [countryToShow, setCountryToShow] = useState(null);
 
   useEffect(() => {
     // If no value is inserted
@@ -20,13 +21,20 @@ function App() {
   // Handle inputs
   const handleSearchCountries = (event) => {
     event.preventDefault();
-    console.log(event.target.value);
+    // console.log(event.target.value);
+    setCountryToShow(null); // Reset countryToShow when continuing search
     setSearchValue(event.target.value);
   };
+
+  // Handle show details
+  const handleShowDetails = (country) => {
+    console.log("Show details for ", country.name.common);
+    setCountryToShow(country);
+  };
   // DEBUGGING
-  if (countriesList) {
-    console.log(countriesList[0]);
-  }
+  // if (countriesList) {
+  //   console.log(countriesList[0]);
+  // }
 
   // List of countries to show
   // console.log("countriesList value:", countriesList);
@@ -39,48 +47,55 @@ function App() {
 
   // CountriesList Component
   const CountriesList = ({ countries }) => {
-    const countriesLength = countries.length;
-    console.log(countriesLength);
+    // console.log(countriesLength);
 
     // Error message if list is more than 10 items and if searchValue is empty
     if (searchValue && filteredCountries.length > 10) {
       return <div>Too many matches, specify another filter</div>;
     }
-    // If only one country remains
-    if (searchValue && countriesLength === 1) {
-      return <div>Single </div>;
+    // If only one country remains show details
+    if (filteredCountries.length === 1) {
+      console.log("Only one country remains:", filteredCountries[0]);
+      return <CountryDetails country={filteredCountries[0]} />;
+    }
+    if (countryToShow) {
+      console.log("Country to show:", countryToShow);
+      return <CountryDetails country={countryToShow} />;
     }
 
+    // setCountryToShow(null);
+
     return countries.map((country) => {
-      return <p key={country.name.common}>{country.name.common}</p>;
+      // console.log(country);
+      return (
+        <p key={country.name.common}>
+          {country.name.common}{" "}
+          <button onClick={() => handleShowDetails(country)}>Show</button>
+        </p>
+      );
     });
   };
 
   // Country Details Component
   const CountryDetails = ({ country }) => {
-    if (filteredCountries.length === 1) {
-      console.log(country.languages);
-      const object = {
-        a: "some string",
-        b: 42,
-        c: false,
-      };
-      return (
-        <div>
-          <h1>{country.name.common}</h1>
-          <p>Capital {country.capital}</p>
-          <p>Area {country.area}</p>
-          <h2>Languages</h2>
-          <ul>
-            {Object.values(country.languages).map((language, code) => {
-              console.log(language);
-              return <li key={code}>{language}</li>;
-            })}
-          </ul>
-          <img src={country.flags.png} alt={country.flags.alt} />
-        </div>
-      );
-    }
+    // if (filteredCountries.length === 1) {
+    // console.log(country.languages);
+    return (
+      <div>
+        <h1>{country.name.common}</h1>
+        <p>Capital {country.capital}</p>
+        <p>Area {country.area}</p>
+        <h2>Languages</h2>
+        <ul>
+          {Object.values(country.languages).map((language, code) => {
+            // console.log(language);
+            return <li key={code}>{language}</li>;
+          })}
+        </ul>
+        <img src={country.flags.png} alt={country.flags.alt} />
+      </div>
+    );
+    // }
   };
   return (
     <div>
@@ -91,7 +106,7 @@ function App() {
       <div>
         {/* {countriesList && <CountriesList countries={filteredCountries} />} */}
         <CountriesList countries={filteredCountries} />
-        <CountryDetails country={filteredCountries[0]} />
+        {/* <CountryDetails country={filteredCountries[0]} /> */}
       </div>
     </div>
   );
