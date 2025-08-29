@@ -1,21 +1,37 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import CountriesList from "./components/CountriesList";
+import countriesService from "./services/countries";
 
 function App() {
-  const [countriesList, setCountriesList] = useState([]);
+  const [countries, setCountries] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [countryToShow, setCountryToShow] = useState(null);
+  const [filteredCountries, SetFilteredCountries] = useState([]);
 
+  // Fetch all countries
   useEffect(() => {
     // If no value is inserted
     if (searchValue) {
-      console.log("Fetching countries");
-      axios
-        .get("https://studies.cs.helsinki.fi/restcountries/api/all")
-        .then((response) => {
-          setCountriesList(response.data);
-        });
+      // console.log("Fetching countries");
+      countriesService.getAll().then((allCountries) => {
+        setCountries(allCountries);
+      });
     }
+  }, [searchValue]);
+
+  // filtered countries without calling api
+  useEffect(() => {
+    // List of countries to show
+    // console.log("countriesList value:", countriesList);
+    SetFilteredCountries(
+      searchValue === ""
+        ? countries
+        : countries.filter((country) =>
+            country.name.common
+              .toLowerCase()
+              .includes(searchValue.toLowerCase())
+          )
+    );
   }, [searchValue]);
 
   // Handle inputs
@@ -28,75 +44,10 @@ function App() {
 
   // Handle show details
   const handleShowDetails = (country) => {
-    console.log("Show details for ", country.name.common);
+    // console.log("Show details for ", country.name.common);
     setCountryToShow(country);
   };
-  // DEBUGGING
-  // if (countriesList) {
-  //   console.log(countriesList[0]);
-  // }
 
-  // List of countries to show
-  // console.log("countriesList value:", countriesList);
-  const filteredCountries =
-    searchValue === ""
-      ? countriesList
-      : countriesList.filter((country) =>
-          country.name.common.toLowerCase().includes(searchValue.toLowerCase())
-        );
-
-  // CountriesList Component
-  const CountriesList = ({ countries }) => {
-    // console.log(countriesLength);
-
-    // Error message if list is more than 10 items and if searchValue is empty
-    if (searchValue && filteredCountries.length > 10) {
-      return <div>Too many matches, specify another filter</div>;
-    }
-    // If only one country remains show details
-    if (filteredCountries.length === 1) {
-      console.log("Only one country remains:", filteredCountries[0]);
-      return <CountryDetails country={filteredCountries[0]} />;
-    }
-    if (countryToShow) {
-      console.log("Country to show:", countryToShow);
-      return <CountryDetails country={countryToShow} />;
-    }
-
-    // setCountryToShow(null);
-
-    return countries.map((country) => {
-      // console.log(country);
-      return (
-        <p key={country.name.common}>
-          {country.name.common}{" "}
-          <button onClick={() => handleShowDetails(country)}>Show</button>
-        </p>
-      );
-    });
-  };
-
-  // Country Details Component
-  const CountryDetails = ({ country }) => {
-    // if (filteredCountries.length === 1) {
-    // console.log(country.languages);
-    return (
-      <div>
-        <h1>{country.name.common}</h1>
-        <p>Capital {country.capital}</p>
-        <p>Area {country.area}</p>
-        <h2>Languages</h2>
-        <ul>
-          {Object.values(country.languages).map((language, code) => {
-            // console.log(language);
-            return <li key={code}>{language}</li>;
-          })}
-        </ul>
-        <img src={country.flags.png} alt={country.flags.alt} />
-      </div>
-    );
-    // }
-  };
   return (
     <div>
       <p>
@@ -104,9 +55,12 @@ function App() {
         <input value={searchValue} onChange={handleSearchCountries} />
       </p>
       <div>
-        {/* {countriesList && <CountriesList countries={filteredCountries} />} */}
-        <CountriesList countries={filteredCountries} />
-        {/* <CountryDetails country={filteredCountries[0]} /> */}
+        <CountriesList
+          countries={filteredCountries}
+          searchValue={searchValue}
+          countryToShow={countryToShow}
+          handleShowDetails={handleShowDetails}
+        />
       </div>
     </div>
   );
