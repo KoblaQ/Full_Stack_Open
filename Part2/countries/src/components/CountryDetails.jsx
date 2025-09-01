@@ -1,3 +1,5 @@
+import WeatherDetails from "./WeatherDetails";
+
 // Country Details Component
 const CountryDetails = ({ country }) => {
   return (
@@ -8,11 +10,11 @@ const CountryDetails = ({ country }) => {
       <h2>Languages</h2>
       <ul>
         {Object.values(country.languages).map((language, code) => {
-          // console.log(language);
           return <li key={code}>{language}</li>;
         })}
       </ul>
       <img src={country.flags.png} alt={country.flags.alt} />
+      <WeatherDetails country={country} />
     </div>
   );
 };

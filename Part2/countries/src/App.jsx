@@ -1,28 +1,27 @@
 import { useState, useEffect } from "react";
 import CountriesList from "./components/CountriesList";
 import countriesService from "./services/countries";
+import weather from "./services/weather";
 
 function App() {
   const [countries, setCountries] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [countryToShow, setCountryToShow] = useState(null);
   const [filteredCountries, SetFilteredCountries] = useState([]);
+  // const [weatherData, setWeatherData] = useState(null);
 
   // Fetch all countries
   useEffect(() => {
     // If no value is inserted
-    if (searchValue) {
-      // console.log("Fetching countries");
-      countriesService.getAll().then((allCountries) => {
-        setCountries(allCountries);
-      });
-    }
-  }, [searchValue]);
+    console.log("Fetching countries");
+    countriesService.getAll().then((allCountries) => {
+      setCountries(allCountries);
+    });
+  }, []);
 
   // filtered countries without calling api
   useEffect(() => {
     // List of countries to show
-    // console.log("countriesList value:", countriesList);
     SetFilteredCountries(
       searchValue === ""
         ? countries
@@ -37,14 +36,12 @@ function App() {
   // Handle inputs
   const handleSearchCountries = (event) => {
     event.preventDefault();
-    // console.log(event.target.value);
-    setCountryToShow(null); // Reset countryToShow when continuing search
+    setCountryToShow(""); // Reset countryToShow when continuing search
     setSearchValue(event.target.value);
   };
 
   // Handle show details
   const handleShowDetails = (country) => {
-    // console.log("Show details for ", country.name.common);
     setCountryToShow(country);
   };
 
@@ -60,6 +57,7 @@ function App() {
           searchValue={searchValue}
           countryToShow={countryToShow}
           handleShowDetails={handleShowDetails}
+          setCountryToShow={setCountryToShow}
         />
       </div>
     </div>
