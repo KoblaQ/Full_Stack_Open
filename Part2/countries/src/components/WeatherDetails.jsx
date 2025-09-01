@@ -13,7 +13,6 @@ const WeatherDetails = ({ country }) => {
     weatherService
       .getWeather(lat, lon)
       .then((data) => {
-        console.log("Weather data:", data);
         setWeatherData(data);
       })
       .catch((error) => {
