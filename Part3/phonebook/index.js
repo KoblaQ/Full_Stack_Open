@@ -1,7 +1,7 @@
 const express = require("express");
-const app = express();
+const morgan = require("morgan");
 
-app.use(express.json());
+const app = express();
 
 let persons = [
   {
@@ -26,6 +26,15 @@ let persons = [
   },
 ];
 
+app.use(express.json());
+// Manually create the token for data
+morgan.token("data", function (req, res) {
+  return JSON.stringify(req.body); // convert from an object to string
+});
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :data")
+); // set up logger
+
 // Get all persons
 app.get("/api/persons", (request, response) => {
   response.json(persons);
@@ -47,7 +56,7 @@ app.get("/api/persons/:id", (request, response) => {
 app.get("/info", (request, response) => {
   const timeOfRequest = new Date();
   response.send(`<div>
-    <p>Phone has infor for ${persons.length} people</p>
+    <p>Phone has info for ${persons.length} people</p>
     <p>${timeOfRequest}</p>
     </div>`);
 });
