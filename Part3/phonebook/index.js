@@ -60,6 +60,27 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(204).end();
 });
 
+// Generate new ID value
+const generateId = () => {
+  return String(Math.floor(Math.random() * 100));
+};
+
+// POST / ADD a person
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+
+  const new_person = {
+    id: generateId(),
+    name: body.name,
+    number: body.number,
+  };
+
+  // Add the new person object to the persons array
+  persons = persons.concat(new_person);
+
+  response.json(new_person);
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
