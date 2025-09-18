@@ -36,6 +36,7 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :data")
 ); // set up logger
 app.use(cors());
+app.use(express.static("dist")); // Middleware for showing Static file from dist
 
 // Get all persons
 app.get("/api/persons", (request, response) => {
@@ -102,7 +103,7 @@ app.post("/api/persons", (request, response) => {
   response.json(new_person);
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
