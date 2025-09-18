@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors"); // Require cors to connect frontend and backend
 
 const app = express();
 
@@ -34,6 +35,7 @@ morgan.token("data", function (req, res) {
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :data")
 ); // set up logger
+app.use(cors());
 
 // Get all persons
 app.get("/api/persons", (request, response) => {
