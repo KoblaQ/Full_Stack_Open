@@ -1,6 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors"); // Require cors to connect frontend and backend
+
+const Person = require("./models/person");
 
 const app = express();
 
@@ -39,20 +42,31 @@ app.use(cors());
 app.use(express.static("dist")); // Middleware for showing Static file from dist
 
 // Get all persons
+// app.get("/api/persons", (request, response) => {
+//   response.json(persons);
+// });
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
 // GET single person
-app.get("/api/persons/:id", (request, response) => {
-  const id = request.params.id;
-  const person = persons.find((person) => person.id === id);
+// app.get("/api/persons/:id", (request, response) => {
+//   const id = request.params.id;
+//   const person = persons.find((person) => person.id === id);
 
-  if (person) {
+//   if (person) {
+//     response.json(person);
+//   } else {
+//     response.status(404).end();
+//   }
+// });
+
+app.get("/api/persons/:id", (request, response) => {
+  Person.findById(request.params.id).then((person) => {
     response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  });
 });
 
 // GET info page
@@ -103,7 +117,7 @@ app.post("/api/persons", (request, response) => {
   response.json(new_person);
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

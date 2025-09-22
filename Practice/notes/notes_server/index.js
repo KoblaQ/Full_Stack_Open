@@ -1,6 +1,23 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 // const cors = require("cors");
+const Note = require("./models/note");
+
+// Mongoose setup
+// const mongoose = require("mongoose");
+
+// const password = process.argv[2];
+// const url = `mongodb+srv://KoblaQ:${password}@cluster0.m8d64pf.mongodb.net/noteApp?retryWrites=true&w=majority&appName=Cluster0`;
+// mongoose.set("strictQuery", false);
+// mongoose.connect(url);
+
+// const noteSchema = new mongoose.Schema({
+//   content: String,
+//   important: Boolean,
+// });
+
+// const Note = mongoose.model("Note", noteSchema);
 
 let notes = [
   {
@@ -39,19 +56,31 @@ app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
 });
 
+// app.get("/api/notes", (request, response) => {
+//   response.json(notes);
+// });
+
 app.get("/api/notes", (request, response) => {
-  response.json(notes);
+  Note.find({}).then((notes) => {
+    response.json(notes);
+  });
 });
 
-app.get("/api/notes/:id", (request, response) => {
-  const id = request.params.id;
-  const note = notes.find((note) => note.id === id);
+// app.get("/api/notes/:id", (request, response) => {
+//   const id = request.params.id;
+//   const note = notes.find((note) => note.id === id);
 
-  if (note) {
+//   if (note) {
+//     response.json(note);
+//   } else {
+//     response.status(404).end();
+//   }
+// });
+
+app.get("/api/notes/:id", (request, response) => {
+  Note.findById(request.params.id).then((note) => {
     response.json(note);
-  } else {
-    response.status(404).end();
-  }
+  });
 });
 
 const generateId = () => {
@@ -69,15 +98,18 @@ app.post("/api/notes", (request, response) => {
     });
   }
 
-  const note = {
+  const note = new Note({
     content: body.content,
     important: body.important || false,
     id: generateId(),
-  };
+  });
 
-  notes = notes.concat(note);
+  // notes = notes.concat(note);
+  // response.json(note);
 
-  response.json(note);
+  note.save().then((savedNote) => {
+    response.json(savedNote);
+  });
 });
 
 app.delete("/api/notes/:id", (request, response) => {
@@ -94,7 +126,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
