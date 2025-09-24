@@ -7,29 +7,6 @@ const Person = require("./models/person");
 
 const app = express();
 
-let persons = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
 // Error handler middleware
 const errorHandler = (error, request, response, next) => {
   console.log(error.message);
@@ -54,27 +31,13 @@ app.use(cors());
 app.use(express.static("dist")); // Middleware for showing Static file from dist
 
 // Get all persons
-// app.get("/api/persons", (request, response) => {
-//   response.json(persons);
-// });
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((persons) => {
     response.json(persons);
   });
 });
 
-// GET single person
-// app.get("/api/persons/:id", (request, response) => {
-//   const id = request.params.id;
-//   const person = persons.find((person) => person.id === id);
-
-//   if (person) {
-//     response.json(person);
-//   } else {
-//     response.status(404).end();
-//   }
-// });
-
+// GET SINGLE PERSON BY ID
 app.get("/api/persons/:id", (request, response) => {
   Person.findById(request.params.id).then((person) => {
     response.json(person);
@@ -82,8 +45,10 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 // GET info page
-app.get("/info", (request, response) => {
+app.get("/info", async (request, response) => {
   const timeOfRequest = new Date();
+  const persons = await Person.find({});
+
   response.send(`<div>
     <p>Phone has info for ${persons.length} people</p>
     <p>${timeOfRequest}</p>
@@ -91,13 +56,6 @@ app.get("/info", (request, response) => {
 });
 
 // DELETE a person
-// app.delete("/api/persons/:id", (request, response) => {
-//   const id = request.params.id;
-//   persons = persons.filter((person) => person.id !== id);
-
-//   response.status(204).end();
-// });
-
 app.delete("/api/persons/:id", (request, response) => {
   Person.findByIdAndDelete(request.params.id)
     .then((result) => {
@@ -106,45 +64,49 @@ app.delete("/api/persons/:id", (request, response) => {
     .catch((error) => next(error));
 });
 
-// Generate new ID value
-const generateId = () => {
-  return String(Math.floor(Math.random() * 100));
-};
-
-// POST / ADD a person
+// ADD a person
 app.post("/api/persons", (request, response) => {
   const body = request.body;
-
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: "content missing",
-    });
-  }
-  // else if (persons.find((person) => person.name === body.name)) {
-  //   return response.status(409).json({
-  //     error: "name must be unique",
-  //   });
-  // }
-
-  // const new_person = {
-  //   id: generateId(),
-  //   name: body.name,
-  //   number: body.number,
-  // };
-
-  // // Add the new person object to the persons array
-  // persons = persons.concat(new_person);
-
-  // response.json(new_person);
 
   const person = new Person({
     name: body.name,
     number: body.number,
   });
 
+  if (!body.name || !body.number) {
+    return response.status(400).json({
+      error: "content missing",
+    });
+  } else if (Person.find({ name: body.name })) {
+    console.log(`${body.name} is a duplicate.`);
+    const personFound = Person.findOne({ name: body.name });
+    personFound.number = body.number;
+    personFound.put().then((savedPerson) => {
+      response.json(savedPerson);
+    });
+  }
+
   person.save().then((savedPerson) => {
     response.json(savedPerson);
   });
+});
+
+// UPDATE a person
+app.put("/api/persons/:id", (request, response, next) => {
+  const { name, number } = request.body;
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (!person) {
+        return response.status(404).end();
+      }
+      person.name = name;
+      person.number = number;
+
+      return person.save().then((updatedPerson) => {
+        response.json(updatedPerson);
+      });
+    })
+    .catch((error) => next(error));
 });
 
 app.use(errorHandler);
