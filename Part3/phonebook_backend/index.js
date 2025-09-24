@@ -30,6 +30,18 @@ let persons = [
   },
 ];
 
+// Error handler middleware
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+// USE MIDDLEWARES
 app.use(express.json());
 // Manually create the token for data
 morgan.token("data", function (req, res) {
@@ -87,9 +99,11 @@ app.get("/info", (request, response) => {
 // });
 
 app.delete("/api/persons/:id", (request, response) => {
-  Person.findByIdAndDelete(request.params.id).then((result) => {
-    response.status(204).end();
-  });
+  Person.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
 // Generate new ID value
@@ -132,6 +146,8 @@ app.post("/api/persons", (request, response) => {
     response.json(savedPerson);
   });
 });
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
