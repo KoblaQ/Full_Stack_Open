@@ -52,6 +52,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
@@ -105,14 +107,14 @@ app.get("/api/notes/:id", (request, response, next) => {
   // });
 });
 
-const generateId = () => {
-  const maxId =
-    notes.length > 0 ? Math.max(...notes.map((n) => Number(n.id))) : 0;
-  return String(maxId + 1);
-};
+// const generateId = () => {
+//   const maxId =
+//     notes.length > 0 ? Math.max(...notes.map((n) => Number(n.id))) : 0;
+//   return String(maxId + 1);
+// };
 
 // CREATE NEW NOTE
-app.post("/api/notes", (request, response) => {
+app.post("/api/notes", (request, response, next) => {
   const body = request.body;
 
   if (!body.content) {
@@ -130,9 +132,12 @@ app.post("/api/notes", (request, response) => {
   // notes = notes.concat(note);
   // response.json(note);
 
-  note.save().then((savedNote) => {
-    response.json(savedNote);
-  });
+  note
+    .save()
+    .then((savedNote) => {
+      response.json(savedNote);
+    })
+    .catch((error) => next(error));
 });
 
 // UPDATE NOTE BY ID
