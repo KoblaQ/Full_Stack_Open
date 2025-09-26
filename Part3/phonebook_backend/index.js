@@ -13,6 +13,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
@@ -65,7 +67,7 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 // ADD a person
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
 
   const person = new Person({
@@ -77,18 +79,21 @@ app.post("/api/persons", (request, response) => {
     return response.status(400).json({
       error: "content missing",
     });
-  } else if (Person.find({ name: body.name })) {
-    console.log(`${body.name} is a duplicate.`);
-    const personFound = Person.findOne({ name: body.name });
-    personFound.number = body.number;
-    personFound.put().then((savedPerson) => {
-      response.json(savedPerson);
-    });
   }
+  // else if (Person.find({ name: body.name })) {
+  //   console.log(`${body.name} is a duplicate.`);
+  //   const personFound = Person.findOne({ name: body.name });
+  //   personFound.number = body.number;
+  // }
 
-  person.save().then((savedPerson) => {
-    response.json(savedPerson);
-  });
+  person
+    .save()
+    .then((savedPerson) => {
+      response.json(savedPerson);
+    })
+    .catch((error) => {
+      next(error);
+    });
 });
 
 // UPDATE a person

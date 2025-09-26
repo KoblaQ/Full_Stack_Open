@@ -71,9 +71,19 @@ const App = () => {
       }
     } else {
       // Add new person to the database
-      personService.create(newPersonObject).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-      });
+      personService
+        .create(newPersonObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+        })
+        .catch((error) => {
+          setNotification(`${error.response.data.error}`);
+          setNotificationType("error");
+          setTimeout(() => {
+            setNotification(null);
+          }, 3000);
+          // setPersons(persons.filter((p) => p.id !== person.id));
+        });
     }
 
     // Update notification
