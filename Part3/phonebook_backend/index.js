@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express')
-const morgan = require('morgan')
+// const morgan = require('morgan')
 const cors = require('cors') // Require cors to connect frontend and backend
 
 const Person = require('./models/person')
@@ -23,12 +23,12 @@ const errorHandler = (error, request, response, next) => {
 // USE MIDDLEWARES
 app.use(express.json())
 // Manually create the token for data
-morgan.token('data', function (req, res) {
-  return JSON.stringify(req.body) // convert from an object to string
-})
-app.use(
-  morgan(':method :url :status :res[content-length] - :response-time ms :data')
-) // set up logger
+// morgan.token('data', function (req, res) {
+//   return JSON.stringify(req.body) // convert from an object to string
+// })
+// app.use(
+//   morgan(':method :url :status :res[content-length] - :response-time ms :data')
+// ) // set up logger
 app.use(cors())
 app.use(express.static('dist')) // Middleware for showing Static file from dist
 
