@@ -32,6 +32,25 @@ test('unique identifier property of blog posts is named id', async () => {
   assert.ok(Object.keys(blogToTest).includes('id'))
 })
 
+test('a valid blog can be added', async () => {
+  const newBlog = {
+    title: 'Testing post Blog',
+    author: 'Kafui',
+    url: 'https://fullstackopen.com/en/',
+    likes: 100,
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+  assert.strictEqual(blogsAtEnd[blogsAtEnd.length - 1].title, newBlog.title)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
