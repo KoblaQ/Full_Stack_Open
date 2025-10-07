@@ -10,13 +10,36 @@ const api = supertest(app)
 
 beforeEach(async () => {
   await Note.deleteMany({})
-  let noteObject = new Note(helper.initialNotes[0])
-  await noteObject.save()
-  noteObject = new Note(helper.initialNotes[1])
-  await noteObject.save()
+  console.log('cleared')
+
+  await Note.insertMany(helper.initialNotes)
+
+  // for (let note of helper.initialNotes) {
+  //   let noteObject = new Note(note)
+  //   await noteObject.save()
+  // }
+
+  // const noteObjects = helper.initialNotes.map((note) => new Note(note))
+  // console.log('noteObjects', noteObjects)
+  // const promiseArray = noteObjects.map((note) => note.save())
+  // await Promise.all(promiseArray)
+  // console.log('promiseArray', promiseArray)
+
+  // helper.initialNotes.forEach(async (note) => {
+  //   let noteObject = new Note(note)
+  //   await noteObject.save()
+  //   console.log('saved')
+  // })
+  // console.log('done')
+
+  // let noteObject = new Note(helper.initialNotes[0])
+  // await noteObject.save()
+  // noteObject = new Note(helper.initialNotes[1])
+  // await noteObject.save()
 })
 
 test('notes are returned as json', async () => {
+  console.log('entered test')
   await api
     .get('/api/notes')
     .expect(200)
