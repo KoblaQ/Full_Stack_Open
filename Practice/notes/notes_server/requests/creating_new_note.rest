@@ -14,3 +14,14 @@ content-type: application/json
     "name": "sample",
     "time": "Wed, 21 Oct 2015 18:27:50 GMT"
 }
+
+###
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IktvYmxhUSIsImlkIjoiNjhmNjRkYTBiZGM2ODkyNjljMjVmMjY4IiwiaWF0IjoxNzYyMTc0NTgyfQ.HHLvNVkAO9QvBUgFjne6VJzXgK_twPkhtdhpgrllQeo
+
+{
+  "content": "New Single page apps use token based auth",
+  "important":false
+
+}
