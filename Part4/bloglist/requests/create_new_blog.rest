@@ -1,0 +1,31 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+	"title": "LinkedIn Profile",
+	"url": "https://www.linkedin.com/in/edemq/",
+	"userId": "690c6810b90d22de1ec8601c",
+	"author": "KoblaQ"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+	"title": "GitHub Profile",
+	"url": "https://github.com/KoblaQ",
+	"author": "KoblaQ",
+	"userId": "690c6810b90d22de1ec8601c"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+	"title": "Fullstack Open",
+	"url": "https://fullstackopen.com/en/",
+	"author": "Edem Q",
+	"userId": "6908eaef1f62ced4a92f6262"
+}
