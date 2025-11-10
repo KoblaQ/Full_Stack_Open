@@ -61,3 +61,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBla
 	"title": "Pekka's Journey with User Token based blog",
 	"url": "https://fullstackopen.com/en/"
 }
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBla2thIiwiaWQiOiI2OTExY2ZhNDg0MjY0MDk0YzViMzUwOGQiLCJpYXQiOjE3NjI3Nzc2MDN9.b-FGqt09TU7TNIBnN3hN8HtYoyOrFlNUWflRXJYK-iE
+
+{
+	"title": "Pekka's Journey with middleware token extraction",
+	"url": "https://fullstackopen.com/en/"
+}

@@ -21,6 +21,7 @@ mongoose
 
 app.use(express.json())
 app.use(middleware.requestLogger)
+app.use(middleware.tokenExtractor) // Extract token from Authorization header (Must come before app.use blogs/blogRouter else it won't work)
 
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
