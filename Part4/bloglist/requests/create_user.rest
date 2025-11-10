@@ -28,3 +28,14 @@ Content-Type: application/json
 	"password": "password"
 
 }
+
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+	"username": "Pekka",
+	"name": "Pekka Pekkonen",
+	"password": "password"
+
+}
