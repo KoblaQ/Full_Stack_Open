@@ -75,7 +75,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBla
 ###
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBla2thIiwiaWQiOiI2OTExY2ZhNDg0MjY0MDk0YzViMzUwOGQiLCJpYXQiOjE3NjI3Nzk4ODl9.lvw4ZAAEXQknBGhhdAF_n1xqSVB7TNNqDGIiuI1s858
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBla2thIiwiaWQiOiI2OTExY2ZhNDg0MjY0MDk0YzViMzUwOGQiLCJpYXQiOjE3NjI4MTE5MzV9.aVOM5GheUw0wsRqsGcfLUgFBgeN3hWgWXaNm89qeCYI
 
 {
 	"title": "DELETE THIS FROM Pekka only",
