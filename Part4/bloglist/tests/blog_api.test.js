@@ -7,7 +7,6 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const helper = require('./test_helper')
 const bcrypt = require('bcrypt')
-// const Test = require('supertest/lib/test')
 
 const api = supertest(app)
 
@@ -35,79 +34,152 @@ test('unique identifier property of blog posts is named id', async () => {
   assert.ok(Object.keys(blogToTest).includes('id'))
 })
 
-test('a valid blog can be added', async () => {
-  const newBlog = {
-    title: 'Testing post Blog',
-    author: 'Kafui',
-    url: 'https://fullstackopen.com/en/',
-    likes: 100,
-  }
+// FAILED TESTS DUE TO AUTHENTICATION REQUIREMENTS IN CONTROLLERS - FIXED
+describe('when there is jwt authorization', () => {
+  let token = null // Declare the token variable
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+  // Before each test
+  beforeEach(async () => {
+    await User.deleteMany({})
 
-  const blogsAtEnd = await helper.blogsInDb()
-  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
-  assert.strictEqual(blogsAtEnd[blogsAtEnd.length - 1].title, newBlog.title)
-})
+    // create user for test case
+    const passwordHash = await bcrypt.hash('secret', 10)
+    const user = new User({ username: 'Kafui', name: 'Kafui Q', passwordHash })
 
-test('verify that likes property defaults to value 0 if left out', async () => {
-  const newBlog = {
-    title: 'Testing post Blog',
-    author: 'Kafui',
-    url: 'https://fullstackopen.com/en/',
-  }
+    await user.save() // Save the user to the database
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    // Login to get the token
+    const response = await api
+      .post('/api/login')
+      .send({ username: user.username, password: 'secret' })
 
-  const blogsAtEnd = await helper.blogsInDb()
-  assert.strictEqual(blogsAtEnd[blogsAtEnd.length - 1].likes, 0)
-})
+    token = await response.body.token // Save the token for use in tests
+  })
 
-describe('missing title or url', () => {
-  test('a blog without title cannot be added', async () => {
+  // Run tests
+  test('a valid blog can be added', async () => {
     const newBlog = {
-      author: 'Kafui',
+      title: 'Testing post Blog with authorization',
+      // author: 'Kafui',
       url: 'https://fullstackopen.com/en/',
-      likes: 99,
+      // likes: 100,
     }
 
-    await api.post('/api/blogs').send(newBlog).expect(400)
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
     const blogsAtEnd = await helper.blogsInDb()
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+    assert.strictEqual(blogsAtEnd[blogsAtEnd.length - 1].title, newBlog.title)
   })
 
-  test('a blog without url cannot be added', async () => {
+  // Test fails when authentication token is not provided
+  test('adding a blog fails without jwt token authorization', async () => {
     const newBlog = {
-      title: 'Testing post Blog',
-      author: 'Kafui',
-      likes: 35,
+      title: 'Testing post Blog without authorization token',
+      // author: 'Kafui',
+      url: 'https://fullstackopen.com/en/',
+      // likes: 100,
     }
 
-    await api.post('/api/blogs').send(newBlog).expect(400)
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
     const blogsAtEnd = await helper.blogsInDb()
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length) // No change should be recorded
   })
-})
 
-test('delete a blog by ID', async () => {
-  const blogsAtStart = await helper.blogsInDb()
-  const blogToBeDeleted = blogsAtStart[0]
+  test('verify that likes property defaults to value 0 if left out', async () => {
+    const newBlog = {
+      title: 'Testing post Blog missing the likes property',
+      url: 'https://fullstackopen.com/en/',
+    }
 
-  await api.delete(`/api/blogs/${blogToBeDeleted.id}`).expect(204)
-  const blogsAtEnd = await helper.blogsInDb()
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-  const blogTitles = blogsAtEnd.map((blog) => blog.title)
-  assert(!blogTitles.includes(blogToBeDeleted.title))
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd[blogsAtEnd.length - 1].likes, 0)
+  })
 
-  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+  describe('missing title or url', () => {
+    test('a blog without title cannot be added', async () => {
+      const newBlog = {
+        author: 'Kafui',
+        url: 'https://fullstackopen.com/en/',
+        likes: 99,
+      }
+
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(400)
+      const blogsAtEnd = await helper.blogsInDb()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+
+    test('a blog without url cannot be added', async () => {
+      const newBlog = {
+        title: 'Testing post Blog without a url',
+        author: 'Kafui',
+        likes: 35,
+      }
+
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(400)
+      const blogsAtEnd = await helper.blogsInDb()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+  })
+
+  test('delete a blog by ID', async () => {
+    // Create add the blog to be deleted (Needs the same user to be created first in beforeEach)
+    const newBlog = {
+      title: 'Testing post Blog to be deleted by ID',
+      url: 'https://fullstackopen.com/en/',
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    let blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+    assert.strictEqual(blogsAtEnd[blogsAtEnd.length - 1].title, newBlog.title)
+
+    // Initiate deletion of the last blog
+    const blogsBeforeDelete = await helper.blogsInDb()
+    const blogToBeDeleted = blogsBeforeDelete[blogsBeforeDelete.length - 1] // Delete the last one instead
+
+    await api
+      .delete(`/api/blogs/${blogToBeDeleted.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204)
+    blogsAtEnd = await helper.blogsInDb()
+
+    const blogTitles = blogsAtEnd.map((blog) => blog.title)
+    assert(!blogTitles.includes(blogToBeDeleted.title))
+
+    assert.strictEqual(blogsAtEnd.length, blogsBeforeDelete.length - 1)
+  })
 })
 
 test('blog likes can be updated', async () => {
