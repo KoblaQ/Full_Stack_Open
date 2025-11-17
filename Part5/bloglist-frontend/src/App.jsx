@@ -9,6 +9,10 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
+  const [newBlog, setNewBlog] = useState('')
+  const [blogTitle, setBlogTitle] = useState('')
+  const [blogAuthor, setBlogAuthor] = useState('')
+  const [blogUrl, setBlogUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -20,9 +24,10 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      // blogService.setToken(user.token)
+      blogService.setToken(user.token) // Get and set the user jwt from the localStorage
     }
   }, [])
+
   // Login Helper functions
   const loginForm = () => (
     <form onSubmit={handleLogin}>
@@ -51,6 +56,64 @@ const App = () => {
     </form>
   )
 
+  // create a blog post helper function
+  const addBlog = async (event) => {
+    event.preventDefault()
+    const blogObject = {
+      title: blogTitle,
+      author: blogAuthor,
+      url: blogUrl,
+    }
+
+    setNewBlog(blogObject)
+
+    const createdBlog = await blogService.create(blogObject)
+    setBlogs(blogs.concat(createdBlog))
+
+    // console.log(blogObject)
+    setBlogTitle('')
+    setBlogAuthor('')
+    setBlogUrl('')
+  }
+
+  // Create Blog form
+  const blogForm = () => (
+    <form onSubmit={addBlog}>
+      <h2>create new</h2>
+      <div>
+        <label>
+          title:{' '}
+          <input
+            type="text"
+            value={blogTitle}
+            onChange={({ target }) => setBlogTitle(target.value)}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          author:{' '}
+          <input
+            type="text"
+            value={blogAuthor}
+            onChange={({ target }) => setBlogAuthor(target.value)}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          url:{' '}
+          <input
+            type="text"
+            value={blogUrl}
+            onChange={({ target }) => setBlogUrl(target.value)}
+          />
+        </label>
+      </div>
+      <button type="submit">create</button>
+    </form>
+  )
+
   // Login Handler
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -61,7 +124,7 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      console.log('Logged in user: ', user)
+      // console.log('Logged in user: ', user)
     } catch {
       setErrorMessage('wrong credentials')
       setTimeout(() => {
@@ -92,6 +155,9 @@ const App = () => {
           </p>
         </div>
       )}
+
+      {blogForm()}
+
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
