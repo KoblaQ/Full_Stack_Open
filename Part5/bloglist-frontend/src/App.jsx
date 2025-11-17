@@ -2,14 +2,18 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [newBlog, setNewBlog] = useState('')
+  const [notification, setNotification] = useState({
+    message: null,
+    type: null,
+  })
+  // const [newBlog, setNewBlog] = useState('')
   const [blogTitle, setBlogTitle] = useState('')
   const [blogAuthor, setBlogAuthor] = useState('')
   const [blogUrl, setBlogUrl] = useState('')
@@ -32,10 +36,12 @@ const App = () => {
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <h2>log in to application</h2>
+      <Notification message={notification.message} type={notification.type} />
       <div>
         <label>
           username
           <input
+            name="username"
             type="text"
             value={username}
             onChange={({ target }) => setUsername(target.value)}
@@ -46,6 +52,7 @@ const App = () => {
         <label>
           password{' '}
           <input
+            name="password"
             type="password"
             value={password}
             onChange={({ target }) => setPassword(target.value)}
@@ -65,7 +72,7 @@ const App = () => {
       url: blogUrl,
     }
 
-    setNewBlog(blogObject)
+    // setNewBlog(blogObject)
 
     const createdBlog = await blogService.create(blogObject)
     setBlogs(blogs.concat(createdBlog))
@@ -74,6 +81,13 @@ const App = () => {
     setBlogTitle('')
     setBlogAuthor('')
     setBlogUrl('')
+    setNotification({
+      message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+      type: 'success',
+    })
+    setTimeout(() => {
+      setNotification({ message: null, type: null })
+    }, 5000)
   }
 
   // Create Blog form
@@ -124,11 +138,10 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      // console.log('Logged in user: ', user)
     } catch {
-      setErrorMessage('wrong credentials')
+      setNotification({ message: 'wrong username or password', type: 'error' })
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification({ message: null, type: null })
       }, 5000)
     }
   }
@@ -136,7 +149,6 @@ const App = () => {
   // Logout Handler
   const handleLogout = (event) => {
     event.preventDefault()
-    console.log('LOGOUT clicked')
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
   }
@@ -146,6 +158,7 @@ const App = () => {
   }
   return (
     <div>
+      <Notification message={notification.message} type={notification.type} />
       <h2>blogs</h2>
       {user && (
         <div>
