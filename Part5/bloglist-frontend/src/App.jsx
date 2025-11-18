@@ -34,7 +34,7 @@ const App = () => {
   }, [])
 
   // UseRef
-  const blogFormRef = useRef()
+  const blogFormRef = useRef() // Passed as a prop to the Toggable Component
 
   // Login Helper functions
   const loginForm = () => (
@@ -89,6 +89,7 @@ const App = () => {
     setTimeout(() => {
       setNotification({ message: null, type: null })
     }, 5000)
+    blogFormRef.current.toggleVisibility() // Hide the blog form after submission
   }
 
   // Create Blog form
