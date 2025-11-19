@@ -34,18 +34,6 @@ const App = () => {
   // UseRef
   const blogFormRef = useRef() // Passed as a prop to the Toggable Component
 
-  // Login Helper functions
-  const loginForm = () => (
-    <LoginForm
-      username={username}
-      setUsername={setUsername}
-      password={password}
-      setPassword={setPassword}
-      notification={notification}
-      handleLogin={handleLogin}
-    />
-  )
-
   // create a blog post helper function
   const addBlog = async (blogObject) => {
     const createdBlog = await blogService.create(blogObject)
@@ -70,6 +58,18 @@ const App = () => {
       </Togglable>
     )
   }
+
+  // Login Helper functions
+  const loginForm = () => (
+    <LoginForm
+      username={username}
+      setUsername={setUsername}
+      password={password}
+      setPassword={setPassword}
+      notification={notification}
+      handleLogin={handleLogin}
+    />
+  )
 
   // Login Handler
   const handleLogin = async (event) => {
