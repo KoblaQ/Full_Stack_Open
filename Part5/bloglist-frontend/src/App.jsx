@@ -5,6 +5,7 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -15,9 +16,6 @@ const App = () => {
     message: null,
     type: null,
   })
-  const [blogTitle, setBlogTitle] = useState('')
-  const [blogAuthor, setBlogAuthor] = useState('')
-  const [blogUrl, setBlogUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -38,54 +36,26 @@ const App = () => {
 
   // Login Helper functions
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <h2>log in to application</h2>
-      <Notification message={notification.message} type={notification.type} />
-      <div>
-        <label>
-          username
-          <input
-            name="username"
-            type="text"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          password{' '}
-          <input
-            name="password"
-            type="password"
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </label>
-      </div>
-      <button type="submit">login</button>
-    </form>
+    <LoginForm
+      username={username}
+      setUsername={setUsername}
+      password={password}
+      setPassword={setPassword}
+      notification={notification}
+      handleLogin={handleLogin}
+    />
   )
 
   // create a blog post helper function
-  const addBlog = async (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: blogTitle,
-      author: blogAuthor,
-      url: blogUrl,
-    }
-
+  const addBlog = async (blogObject) => {
     const createdBlog = await blogService.create(blogObject)
     setBlogs(blogs.concat(createdBlog))
 
-    setBlogTitle('')
-    setBlogAuthor('')
-    setBlogUrl('')
     setNotification({
       message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
       type: 'success',
     })
+    // Make the blog notification vanish after 5 seconds
     setTimeout(() => {
       setNotification({ message: null, type: null })
     }, 5000)
@@ -96,15 +66,7 @@ const App = () => {
   const blogForm = () => {
     return (
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm
-          blogTitle={blogTitle}
-          blogAuthor={blogAuthor}
-          blogUrl={blogUrl}
-          handleBlogTitleChange={({ target }) => setBlogTitle(target.value)}
-          handleBlogAuthorChange={({ target }) => setBlogAuthor(target.value)}
-          handleBlogUrlChange={({ target }) => setBlogUrl(target.value)}
-          handleSubmit={addBlog}
-        />
+        <BlogForm createBlog={addBlog} />
       </Togglable>
     )
   }
