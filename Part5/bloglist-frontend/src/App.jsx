@@ -50,6 +50,15 @@ const App = () => {
     blogFormRef.current.toggleVisibility() // Hide the blog form after submission
   }
 
+  // Update Blog likes
+  const updateBlog = async (blogObject) => {
+    const updatedBlog = await blogService.update(blogObject.id, blogObject)
+    // Update the blog state to reflect the new change in likes
+    setBlogs(
+      blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+    )
+  }
+
   // Create Blog form
   const blogForm = () => {
     return (
@@ -115,7 +124,7 @@ const App = () => {
       {blogForm()}
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
       ))}
     </div>
   )

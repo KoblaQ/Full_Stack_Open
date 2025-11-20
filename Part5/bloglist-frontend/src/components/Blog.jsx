@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import Togglable from './Togglable'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateBlog }) => {
   const [visible, setVisible] = useState(false)
 
   const showWhenVisible = { display: visible ? '' : 'none' }
@@ -10,6 +9,13 @@ const Blog = ({ blog }) => {
 
   const toggleVisibility = () => {
     setVisible(!visible)
+  }
+
+  // Update the likes in the blog object
+  const updateLikes = (event) => {
+    event.preventDefault()
+    const updatedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id } // also add the user id to the object
+    updateBlog(updatedBlog)
   }
 
   const blogStyle = {
@@ -28,7 +34,7 @@ const Blog = ({ blog }) => {
       <div style={showWhenVisible}>
         <p>{blog.url}</p>
         <p>
-          likes {blog.likes} <button>like</button>
+          likes {blog.likes} <button onClick={updateLikes}>like</button>
         </p>
         <p>{blog.author}</p>
       </div>
