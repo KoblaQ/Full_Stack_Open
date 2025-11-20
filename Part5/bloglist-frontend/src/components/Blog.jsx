@@ -14,7 +14,18 @@ const Blog = ({ blog, updateBlog }) => {
   // Update the likes in the blog object
   const updateLikes = (event) => {
     event.preventDefault()
-    const updatedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id } // also add the user id to the object
+
+    // Allows for the like button to work multiple times without error
+    // console.log('Blog user:', blog.user)
+    // console.log('Blog user type:', typeof blog.user)
+    // console.log(blog.user.id)
+    const userId =
+      typeof blog.user === 'object' && blog.user !== null
+        ? blog.user.id
+        : blog.user
+    const updatedBlog = { ...blog, likes: blog.likes + 1, user: userId }
+    // const userId = blog.user.id.toString() // ensure it's a string
+    // const updatedBlog = { ...blog, likes: blog.likes + 1, user: userId } // also add the user id to the object
     updateBlog(updatedBlog)
   }
 
@@ -32,7 +43,7 @@ const Blog = ({ blog, updateBlog }) => {
         <button onClick={toggleVisibility}>{buttonLabel}</button>
       </div>
       <div style={showWhenVisible}>
-        <p>{blog.url}</p>
+        <a href={blog.url}>{blog.url}</a>
         <p>
           likes {blog.likes} <button onClick={updateLikes}>like</button>
         </p>

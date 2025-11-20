@@ -18,7 +18,15 @@ const App = () => {
   })
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    // blogService.getAll().then((blogs) => setBlogs(blogs))
+    blogService.getAll().then((blogs) => {
+      // Implement sorting the blogs in descending order (BY THE NUMBER OF LIKES) after getting from the database
+      // const sortedBlogs = blogs.sort(
+      //   (firstBlog, secondBlog) => secondBlog.likes - firstBlog.likes
+      // )
+      // setBlogs(sortedBlogs)
+      setBlogs(blogs)
+    })
   }, [])
 
   // UseEffect for the user in localStorage
@@ -123,9 +131,14 @@ const App = () => {
 
       {blogForm()}
 
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
-      ))}
+      {
+        //Sort the blogs based on the number of likes before rendering them
+        blogs
+          .sort((firstBlog, secondBlog) => secondBlog.likes - firstBlog.likes)
+          .map((blog) => (
+            <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+          ))
+      }
     </div>
   )
 }
