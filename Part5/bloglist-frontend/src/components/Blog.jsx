@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, updateBlog }) => {
+const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
   const [visible, setVisible] = useState(false)
 
   const showWhenVisible = { display: visible ? '' : 'none' }
@@ -9,24 +9,41 @@ const Blog = ({ blog, updateBlog }) => {
 
   const toggleVisibility = () => {
     setVisible(!visible)
+    // console.log(blog)
+    // console.log(user)
+    // console.log('blog.user.name:', blog.user.name)
+    // console.log('Type of blog.user.name:', typeof blog.user.name)
+
+    // console.log('user.name:', user.name)
+    // console.log('Type of user.name:', typeof user.name)
+    // console.log('typeof blog.user:', typeof blog.user)
+    // console.log('typeof user:', typeof user)
+    // console.log('typeof blog:', typeof blog)
+    // console.log(
+    //   'blogOwner:',
+    //   typeof blog.user === 'object' ? blog.user.name : blog.user
+    // )
+    // console.log('typeof blogOwner:', blog.user.id)
   }
 
   // Update the likes in the blog object
   const updateLikes = (event) => {
     event.preventDefault()
 
-    // Allows for the like button to work multiple times without error
-    // console.log('Blog user:', blog.user)
-    // console.log('Blog user type:', typeof blog.user)
-    // console.log(blog.user.id)
-    const userId =
-      typeof blog.user === 'object' && blog.user !== null
-        ? blog.user.id
-        : blog.user
-    const updatedBlog = { ...blog, likes: blog.likes + 1, user: userId }
-    // const userId = blog.user.id.toString() // ensure it's a string
-    // const updatedBlog = { ...blog, likes: blog.likes + 1, user: userId } // also add the user id to the object
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+      user: blog.user.id,
+    }
+    // console.log('Updated blog:', updatedBlog)
     updateBlog(updatedBlog)
+  }
+
+  const handleDeleteBlog = (event) => {
+    event.preventDefault()
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      deleteBlog(blog.id)
+    }
   }
 
   const blogStyle = {
@@ -38,16 +55,21 @@ const Blog = ({ blog, updateBlog }) => {
   }
   return (
     <div style={blogStyle}>
-      <div>
+      <p>
         {blog.title} {blog.author}{' '}
         <button onClick={toggleVisibility}>{buttonLabel}</button>
-      </div>
+      </p>
       <div style={showWhenVisible}>
         <a href={blog.url}>{blog.url}</a>
         <p>
           likes {blog.likes} <button onClick={updateLikes}>like</button>
         </p>
-        <p>{blog.author}</p>
+        <p>
+          added by {typeof blog.user === 'object' ? blog.user.name : blog.user}
+        </p>
+        {blog.user.name === user.name && (
+          <button onClick={handleDeleteBlog}>remove</button>
+        )}
       </div>
     </div>
   )

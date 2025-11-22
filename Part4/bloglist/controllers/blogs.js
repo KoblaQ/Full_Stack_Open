@@ -29,16 +29,22 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
 
   const blog = new Blog({
     title: body.title,
-    author: user.name, // Set the author of the blog to the name of the user creating it
+    author: body.author,
+    // author: user.name, // Set the author of the blog to the name of the user creating it
     url: body.url,
     user: user._id,
     likes: body.likes || 0,
   })
+
   const savedBlog = await blog.save()
-  user.blogs = user.blogs.concat(savedBlog._id)
+  const populatedBlog = await Blog.findById(savedBlog._id).populate('user', {
+    username: 1,
+    name: 1,
+  }) // .populate works like join in SQL
+  user.blogs = user.blogs.concat(populatedBlog._id)
   await user.save()
 
-  response.status(201).json(savedBlog)
+  response.status(201).json(populatedBlog)
 })
 
 // Delete by ID
@@ -57,8 +63,11 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
 
 // Update blog by ID
 blogsRouter.put('/:id', async (request, response) => {
-  const { user, likes, author, title, url } = request.body
-  const blogToUpdate = await Blog.findById(request.params.id)
+  let { user, likes, author, title, url } = request.body
+  user = typeof user === 'object' && user !== null ? user.id || user._id : user
+  // const blogToUpdate = await Blog.findById(request.params.id)
+  const blogToUpdate = request.body
+  // console.log('REQUEST BODY: ', request.body)
 
   blogToUpdate.user = user
   blogToUpdate.likes = likes
@@ -66,7 +75,20 @@ blogsRouter.put('/:id', async (request, response) => {
   blogToUpdate.title = title
   blogToUpdate.url = url
 
-  const updatedBlog = await blogToUpdate.save()
+  // await blogToUpdate.save()
+  await Blog.findOneAndUpdate({ _id: request.params.id }, blogToUpdate, {
+    new: true,
+  })
+
+  const updatedBlog = await Blog.findById(request.params.id).populate('user', {
+    username: 1,
+    name: 1,
+  }) // .populate works like join in SQL
+  // const updatedBlog = await Blog.findById(request.params.id).populate('user', {
+  //   username: 1,
+  //   name: 1,
+  // }) // .populate works like join in SQL
+  // console.log('UPDATED BLOG: ', updatedBlog)
   response.status(200).json(updatedBlog)
 })
 

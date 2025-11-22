@@ -18,15 +18,7 @@ const App = () => {
   })
 
   useEffect(() => {
-    // blogService.getAll().then((blogs) => setBlogs(blogs))
-    blogService.getAll().then((blogs) => {
-      // Implement sorting the blogs in descending order (BY THE NUMBER OF LIKES) after getting from the database
-      // const sortedBlogs = blogs.sort(
-      //   (firstBlog, secondBlog) => secondBlog.likes - firstBlog.likes
-      // )
-      // setBlogs(sortedBlogs)
-      setBlogs(blogs)
-    })
+    blogService.getAll().then((blogs) => setBlogs(blogs))
   }, [])
 
   // UseEffect for the user in localStorage
@@ -60,11 +52,17 @@ const App = () => {
 
   // Update Blog likes
   const updateBlog = async (blogObject) => {
+    // console.log('Updating blog:', blogObject)
     const updatedBlog = await blogService.update(blogObject.id, blogObject)
     // Update the blog state to reflect the new change in likes
     setBlogs(
       blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
     )
+  }
+  // Delete blog
+  const deleteBlog = async (id) => {
+    await blogService.deleteBlog(id)
+    setBlogs(blogs.filter((blog) => blog.id !== id)) // Refresh the blogs after deletion
   }
 
   // Create Blog form
@@ -96,6 +94,7 @@ const App = () => {
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user)) // Save the logged in user to local storage.
       setUser(user)
+      blogService.setToken(user.token) // set the token for the user
       setUsername('')
       setPassword('')
     } catch {
@@ -136,7 +135,13 @@ const App = () => {
         blogs
           .sort((firstBlog, secondBlog) => secondBlog.likes - firstBlog.likes)
           .map((blog) => (
-            <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              updateBlog={updateBlog}
+              deleteBlog={deleteBlog}
+              user={user}
+            />
           ))
       }
     </div>
