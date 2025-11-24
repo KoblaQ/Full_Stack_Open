@@ -64,11 +64,13 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
         <p>
           likes {blog.likes} <button onClick={updateLikes}>like</button>
         </p>
-        <p>
-          added by {typeof blog.user === 'object' ? blog.user.name : blog.user}
-        </p>
         {blog.user.name === user.name && (
-          <button onClick={handleDeleteBlog}>remove</button>
+          <button
+            style={{ backgroundColor: '#24A0ED' }}
+            onClick={handleDeleteBlog}
+          >
+            remove
+          </button>
         )}
       </div>
     </div>
