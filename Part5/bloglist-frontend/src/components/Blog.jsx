@@ -54,14 +54,16 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
     marginBottom: 5,
   }
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog">
       <p>
         {blog.title} {blog.author}{' '}
         <button onClick={toggleVisibility}>{buttonLabel}</button>
       </p>
-      <div style={showWhenVisible}>
-        <a href={blog.url}>{blog.url}</a>
-        <p>
+      <div style={showWhenVisible} className="blogDetails">
+        <a href={blog.url} className="blogUrl">
+          {blog.url}
+        </a>
+        <p className="blogLikes">
           likes {blog.likes} <button onClick={updateLikes}>like</button>
         </p>
         {blog.user.name === user.name && (
