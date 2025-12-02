@@ -28,6 +28,12 @@ app.use('/api/notes', notesRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 
+// Only use the testing router if it is started from the playwright test
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
+
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
