@@ -52,4 +52,36 @@ describe('Blog app', () => {
       await expect(page.getByRole('button', { name: 'login' })).toBeVisible()
     })
   })
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'KoblaQ', 'salainen')
+    })
+
+    test('a new blog can be created', async ({ page }) => {
+      await page.getByRole('button', { name: 'create new blog' }).click()
+
+      await page.getByLabel('title:').fill('New note created by playwright')
+      await page.getByLabel('author:').fill('PlaywrightApp')
+      await page.getByLabel('url:').fill('https://playwright.dev/')
+
+      await page.getByRole('button', { name: 'create' }).click()
+      await page.getByRole('button', { name: 'cancel' }).click()
+
+      // Error message should be printed at the right place
+      const notificationDiv = page.locator('.message')
+      await expect(notificationDiv).toContainText(
+        'a new blog New note created by playwright by PlaywrightApp added'
+      )
+      await expect(notificationDiv).toHaveCSS('border-style', 'solid')
+      await expect(notificationDiv).toHaveCSS('color', 'rgb(0, 128, 0)')
+      await expect(
+        page.getByText('New note created by playwright PlaywrightApp')
+      ).toBeVisible()
+
+      await expect(page.getByRole('button', { name: 'view' })).toBeVisible()
+      await page.getByRole('button', { name: 'view' }).click()
+      await expect(page.getByRole('button', { name: 'like' })).toBeVisible()
+    })
+  })
 })
