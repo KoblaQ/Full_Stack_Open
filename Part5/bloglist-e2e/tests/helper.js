@@ -12,6 +12,16 @@ const createBlog = async (page, title, author, url) => {
   await page.getByLabel('url:').fill(url)
 
   await page.getByRole('button', { name: 'create' }).click()
-  // await page.getByText(title + ' ' + author).waitFor()
+  await page.getByText(title + ' ' + author).waitFor()
 }
-export { loginWith, createBlog }
+
+const createUser = async (request, name, username, password) => {
+  await request.post('/api/users', {
+    data: {
+      name: name,
+      username: username,
+      password: password,
+    },
+  })
+}
+export { loginWith, createBlog, createUser }

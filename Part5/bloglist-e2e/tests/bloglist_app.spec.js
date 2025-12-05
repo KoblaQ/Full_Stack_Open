@@ -1,5 +1,6 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith, createBlog } = require('./helper')
+const { loginWith, createBlog, createUser } = require('./helper')
+const { before } = require('node:test')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -7,13 +8,8 @@ describe('Blog app', () => {
     await request.post('/api/testing/reset')
 
     // Create a user for the backend
-    await request.post('/api/users', {
-      data: {
-        name: 'Test User',
-        username: 'KoblaQ',
-        password: 'salainen',
-      },
-    })
+    await createUser(request, 'Test User', 'KoblaQ', 'salainen') // Create first User
+    await createUser(request, 'Second Test_User', 'Tester', 'salainen') // Create second User
 
     // Go to the login page
     await page.goto('/')
@@ -55,7 +51,7 @@ describe('Blog app', () => {
 
   describe('When logged in', () => {
     beforeEach(async ({ page }) => {
-      await loginWith(page, 'KoblaQ', 'salainen')
+      await loginWith(page, 'KoblaQ', 'salainen') // Login with first user
     })
 
     test('a new blog can be created', async ({ page }) => {
@@ -65,14 +61,6 @@ describe('Blog app', () => {
         'PlaywrightApp',
         'https://playwright.dev/'
       )
-      // await page.getByRole('button', { name: 'create new blog' }).click()
-
-      // await page.getByLabel('title:').fill('New note created by playwright')
-      // await page.getByLabel('author:').fill('PlaywrightApp')
-      // await page.getByLabel('url:').fill('https://playwright.dev/')
-
-      // await page.getByRole('button', { name: 'create' }).click()
-      // await page.getByRole('button', { name: 'cancel' }).click()
 
       // Error message should be printed at the right place
       const notificationDiv = page.locator('.message')
@@ -134,6 +122,117 @@ describe('Blog app', () => {
       await expect(
         page.getByText('Blog to be deleted PlaywrightAppDelete')
       ).not.toBeVisible()
+    })
+
+    describe('Multiple users with multiple blogs', () => {
+      beforeEach(async ({ page }) => {
+        // Create a blog with the first user
+        await createBlog(
+          page,
+          'First User Blog',
+          'PlaywrightAppFirstUser',
+          'https://playwright.dev/'
+        )
+
+        // Create a second blog with the first user
+        await createBlog(
+          page,
+          'First User Blog number 2',
+          'PlaywrightAppFirstUser',
+          'https://playwright.dev/'
+        )
+
+        // Logout first user out
+        await page.getByRole('button', { name: 'logout' }).click()
+
+        // Login with second user
+        await loginWith(page, 'Tester', 'salainen')
+
+        // Create a third blog with the second user
+        await createBlog(
+          page,
+          'Second User first Blog',
+          'PlaywrightAppSecondUser',
+          'https://playwright.dev/'
+        )
+
+        // Create a forth blog with the second user
+        await createBlog(
+          page,
+          'Second User fourth Blog',
+          'PlaywrightAppSecondUser',
+          'https://playwright.dev/'
+        )
+      })
+
+      test('only a user who created the blog can see the remove button', async ({
+        page,
+      }) => {
+        // Get the second user's blog element
+        const secondUserBlogElement = page
+          .getByText('Second User first Blog PlaywrightAppSecondUser')
+          .locator('..')
+
+        // Get the first user's blog element
+        const firstUserBlogElement = page
+          .getByText('First User Blog PlaywrightAppFirstUser')
+          .locator('..')
+
+        // Expand the blog details and check that remove button is not visible for logged out user
+        await secondUserBlogElement
+          .getByRole('button', { name: 'view' })
+          .click()
+
+        // Check that the remove button is visible to the Second User who is logged in.
+        await expect(
+          secondUserBlogElement.getByRole('button', { name: 'remove' })
+        ).toBeVisible()
+
+        // Expand the blog details and check that remove button is not visible for logged out user
+        await firstUserBlogElement.getByRole('button', { name: 'view' }).click()
+        await expect(
+          firstUserBlogElement.getByRole('button', { name: 'remove' })
+        ).not.toBeVisible()
+      })
+
+      test('blogs are arranged in descending order of likes', async ({
+        page,
+      }) => {
+        // Get the second user's blog element
+        const secondUserBlogElement = page
+          .getByText('Second User first Blog PlaywrightAppSecondUser')
+          .locator('..')
+
+        // Get the first user's blog element
+        const firstUserBlogElement = page
+          .getByText('First User Blog PlaywrightAppFirstUser')
+          .locator('..')
+
+        // Like second user's blog
+        await secondUserBlogElement
+          .getByRole('button', { name: 'view' })
+          .click()
+        await secondUserBlogElement
+          .getByRole('button', { name: 'like' })
+          .click()
+        await secondUserBlogElement.getByText('likes 1').waitFor()
+
+        // DO IT AGAIN
+        await secondUserBlogElement
+          .getByRole('button', { name: 'like' })
+          .click()
+        await secondUserBlogElement.getByText('likes 2').waitFor()
+
+        await secondUserBlogElement
+          .getByRole('button', { name: 'like' })
+          .click()
+        await secondUserBlogElement.getByText('likes 3').waitFor()
+
+        // // Like the first blog post 5 times
+        // for(let i= 1; i <= 5; i++) {
+        // 	await
+        // }
+      })
     })
   })
 })
