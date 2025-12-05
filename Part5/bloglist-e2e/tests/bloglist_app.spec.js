@@ -1,13 +1,13 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith } = require('./helper')
+const { loginWith, createBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
     //Empty the database (from the reset controler in the backend)
-    await request.post('http://localhost:3003/api/testing/reset')
+    await request.post('/api/testing/reset')
 
     // Create a user for the backend
-    await request.post('http://localhost:3003/api/users', {
+    await request.post('/api/users', {
       data: {
         name: 'Test User',
         username: 'KoblaQ',
@@ -16,7 +16,7 @@ describe('Blog app', () => {
     })
 
     // Go to the login page
-    await page.goto('http://localhost:5173')
+    await page.goto('/')
   })
 
   test('Login form is shown', async ({ page }) => {
@@ -59,14 +59,20 @@ describe('Blog app', () => {
     })
 
     test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button', { name: 'create new blog' }).click()
+      await createBlog(
+        page,
+        'New note created by playwright',
+        'PlaywrightApp',
+        'https://playwright.dev/'
+      )
+      // await page.getByRole('button', { name: 'create new blog' }).click()
 
-      await page.getByLabel('title:').fill('New note created by playwright')
-      await page.getByLabel('author:').fill('PlaywrightApp')
-      await page.getByLabel('url:').fill('https://playwright.dev/')
+      // await page.getByLabel('title:').fill('New note created by playwright')
+      // await page.getByLabel('author:').fill('PlaywrightApp')
+      // await page.getByLabel('url:').fill('https://playwright.dev/')
 
-      await page.getByRole('button', { name: 'create' }).click()
-      await page.getByRole('button', { name: 'cancel' }).click()
+      // await page.getByRole('button', { name: 'create' }).click()
+      // await page.getByRole('button', { name: 'cancel' }).click()
 
       // Error message should be printed at the right place
       const notificationDiv = page.locator('.message')
@@ -78,10 +84,23 @@ describe('Blog app', () => {
       await expect(
         page.getByText('New note created by playwright PlaywrightApp')
       ).toBeVisible()
+    })
+
+    test('a blog can be liked', async ({ page }) => {
+      await createBlog(
+        page,
+        'New likeBlog created by playwright',
+        'PlaywrightAppLike',
+        'https://playwright.dev/'
+      )
 
       await expect(page.getByRole('button', { name: 'view' })).toBeVisible()
       await page.getByRole('button', { name: 'view' }).click()
       await expect(page.getByRole('button', { name: 'like' })).toBeVisible()
+      await expect(page.getByText('likes 0')).toBeVisible()
+      await page.getByRole('button', { name: 'like' }).click()
+
+      await expect(page.getByText('likes 1')).toBeVisible()
     })
   })
 })
