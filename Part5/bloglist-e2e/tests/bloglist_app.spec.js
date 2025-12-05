@@ -102,5 +102,38 @@ describe('Blog app', () => {
 
       await expect(page.getByText('likes 1')).toBeVisible()
     })
+
+    test('a blog can be deleted', async ({ page }) => {
+      await createBlog(
+        page,
+        'Blog to be deleted',
+        'PlaywrightAppDelete',
+        'https://playwright.dev/'
+      )
+
+      await expect(
+        page.getByText('Blog to be deleted PlaywrightAppDelete')
+      ).toBeVisible()
+
+      await expect(page.getByRole('button', { name: 'view' })).toBeVisible()
+      await page.getByRole('button', { name: 'view' }).click()
+      await expect(page.getByRole('button', { name: 'remove' })).toBeVisible()
+
+      // Register the dialog handler for confirming
+      page.on('dialog', (dialog) => {
+        expect(dialog.type()).toBe('confirm')
+        expect(dialog.message()).toContain(
+          'Remove blog Blog to be deleted by PlaywrightAppDelete'
+        )
+        dialog.accept()
+      })
+
+      await page.getByRole('button', { name: 'remove' }).click() // Set up the dialog handler above before this
+
+      // Check to confirm that the post has been deleted
+      await expect(
+        page.getByText('Blog to be deleted PlaywrightAppDelete')
+      ).not.toBeVisible()
+    })
   })
 })
