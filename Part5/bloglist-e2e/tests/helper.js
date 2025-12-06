@@ -24,4 +24,17 @@ const createUser = async (request, name, username, password) => {
     },
   })
 }
-export { loginWith, createBlog, createUser }
+
+const likeBlog = async (blogElement, numberOfLikes) => {
+  // Expand the blog details
+  await blogElement.getByRole('button', { name: 'view' }).click()
+  // Execute the likes
+  for (let i = 0; i <= numberOfLikes; i++) {
+    await blogElement.getByRole('button', { name: 'like' }).click()
+    await blogElement.getByText(`likes ${i}`).waitFor()
+  }
+
+  // Close the blog details
+  await blogElement.getByRole('button', { name: 'hide' }).click()
+}
+export { loginWith, createBlog, createUser, likeBlog }

@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith, createBlog, createUser } = require('./helper')
+const { loginWith, createBlog, createUser, likeBlog } = require('./helper')
 const { before } = require('node:test')
 
 describe('Blog app', () => {
@@ -129,7 +129,7 @@ describe('Blog app', () => {
         // Create a blog with the first user
         await createBlog(
           page,
-          'First User Blog',
+          'First Blog',
           'PlaywrightAppFirstUser',
           'https://playwright.dev/'
         )
@@ -137,7 +137,7 @@ describe('Blog app', () => {
         // Create a second blog with the first user
         await createBlog(
           page,
-          'First User Blog number 2',
+          'Second Blog',
           'PlaywrightAppFirstUser',
           'https://playwright.dev/'
         )
@@ -151,7 +151,7 @@ describe('Blog app', () => {
         // Create a third blog with the second user
         await createBlog(
           page,
-          'Second User first Blog',
+          'Third Blog',
           'PlaywrightAppSecondUser',
           'https://playwright.dev/'
         )
@@ -159,7 +159,7 @@ describe('Blog app', () => {
         // Create a forth blog with the second user
         await createBlog(
           page,
-          'Second User fourth Blog',
+          'Fourth Blog',
           'PlaywrightAppSecondUser',
           'https://playwright.dev/'
         )
@@ -168,70 +168,80 @@ describe('Blog app', () => {
       test('only a user who created the blog can see the remove button', async ({
         page,
       }) => {
-        // Get the second user's blog element
-        const secondUserBlogElement = page
-          .getByText('Second User first Blog PlaywrightAppSecondUser')
+        // Get the first user's blog element
+        const firstBlogElement = page
+          .getByText('First Blog PlaywrightAppFirstUser')
           .locator('..')
 
-        // Get the first user's blog element
-        const firstUserBlogElement = page
-          .getByText('First User Blog PlaywrightAppFirstUser')
+        // Get the second user's blog element
+        const secondBlogElement = page
+          .getByText('Third Blog PlaywrightAppSecondUser')
           .locator('..')
 
         // Expand the blog details and check that remove button is not visible for logged out user
-        await secondUserBlogElement
-          .getByRole('button', { name: 'view' })
-          .click()
+        await secondBlogElement.getByRole('button', { name: 'view' }).click()
 
         // Check that the remove button is visible to the Second User who is logged in.
         await expect(
-          secondUserBlogElement.getByRole('button', { name: 'remove' })
+          secondBlogElement.getByRole('button', { name: 'remove' })
         ).toBeVisible()
 
         // Expand the blog details and check that remove button is not visible for logged out user
-        await firstUserBlogElement.getByRole('button', { name: 'view' }).click()
+        await firstBlogElement.getByRole('button', { name: 'view' }).click()
         await expect(
-          firstUserBlogElement.getByRole('button', { name: 'remove' })
+          firstBlogElement.getByRole('button', { name: 'remove' })
         ).not.toBeVisible()
       })
 
       test('blogs are arranged in descending order of likes', async ({
         page,
       }) => {
-        // Get the second user's blog element
-        const secondUserBlogElement = page
-          .getByText('Second User first Blog PlaywrightAppSecondUser')
+        // Get the first blog element
+        const firstBlogElement = page
+          .getByText('First Blog PlaywrightAppFirstUser')
           .locator('..')
 
-        // Get the first user's blog element
-        const firstUserBlogElement = page
-          .getByText('First User Blog PlaywrightAppFirstUser')
+        // Get the second blog element
+        const secondBlogElement = page
+          .getByText('Second Blog PlaywrightAppFirstUser')
           .locator('..')
 
-        // Like second user's blog
-        await secondUserBlogElement
-          .getByRole('button', { name: 'view' })
-          .click()
-        await secondUserBlogElement
-          .getByRole('button', { name: 'like' })
-          .click()
-        await secondUserBlogElement.getByText('likes 1').waitFor()
+        // Get the third blog element
+        const thirdBlogElement = page
+          .getByText('Third Blog PlaywrightAppSecondUser')
+          .locator('..')
 
-        // DO IT AGAIN
-        await secondUserBlogElement
-          .getByRole('button', { name: 'like' })
-          .click()
-        await secondUserBlogElement.getByText('likes 2').waitFor()
+        // Get the fourth blog element
+        const fourthBlogElement = page
+          .getByText('Fourth Blog PlaywrightAppSecondUser')
+          .locator('..')
 
-        await secondUserBlogElement
-          .getByRole('button', { name: 'like' })
-          .click()
-        await secondUserBlogElement.getByText('likes 3').waitFor()
+        // Like the first blog post 2 times
+        await likeBlog(firstBlogElement, 2)
 
-        // // Like the first blog post 5 times
-        // for(let i= 1; i <= 5; i++) {
-        // 	await
-        // }
+        // Like the second blog post 5 times
+        await likeBlog(secondBlogElement, 5)
+
+        // Like the third blog post 1 time
+        await likeBlog(thirdBlogElement, 1)
+
+        // Like the fourth blog post 3 times
+        await likeBlog(fourthBlogElement, 3)
+
+        // Get a list of all the blogs using the .blog class
+        const allBlogsDiv = page.locator('.blog')
+
+        await expect(allBlogsDiv).toHaveCount(4)
+
+        // Based on the number of likes the blogs should be arranged as expected
+        await expect(allBlogsDiv.nth(0)).toContainText('Second Blog')
+        await expect(allBlogsDiv.nth(0)).toContainText('likes 5')
+        await expect(allBlogsDiv.nth(1)).toContainText('Fourth Blog')
+        await expect(allBlogsDiv.nth(1)).toContainText('likes 3')
+        await expect(allBlogsDiv.nth(2)).toContainText('First Blog')
+        await expect(allBlogsDiv.nth(2)).toContainText('likes 2')
+        await expect(allBlogsDiv.nth(3)).toContainText('Third Blog')
+        await expect(allBlogsDiv.nth(3)).toContainText('likes 1')
       })
     })
   })
