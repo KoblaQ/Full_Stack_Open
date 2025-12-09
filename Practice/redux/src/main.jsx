@@ -1,8 +1,6 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-// import './index.css'
-// import App from './App.jsx'
 import { createStore } from 'redux'
+import noteReducer from './reducers/noteReducer'
 
 // const counterReducer = (state, action) => {
 //   if (action.type === 'INCREMENT') {
@@ -29,17 +27,17 @@ import { createStore } from 'redux'
 //   }
 // }
 
-const noteReducer = (state = [], action) => {
-  switch (action.type) {
-    case 'NEW_NOTE':
-      // state.push(action.payload)
-      return state.concat(action.payload)
-    // case 'TOGGLE_IMPORTANCE':
-    //   return state.concat()
-    default:
-      return state
-  }
-}
+// const noteReducer = (state = [], action) => {
+//   switch (action.type) {
+//     case 'NEW_NOTE':
+//       // state.push(action.payload)
+//       return state.concat(action.payload)
+//     // case 'TOGGLE_IMPORTANCE':
+//     //   return state.concat()
+//     default:
+//       return state
+//   }
+// }
 
 // const store = createStore(counterReducer)
 const store = createStore(noteReducer)
