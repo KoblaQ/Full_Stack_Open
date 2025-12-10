@@ -4,6 +4,7 @@
 // import { useSelector, useDispatch } from 'react-redux'
 import NoteForm from './components/NoteForm'
 import Notes from './components/Notes'
+import VisibilityFilter from './components/VisibilityFilter'
 
 // const counterReducer = (state, action) => {
 //   if (action.type === 'INCREMENT') {
@@ -80,6 +81,10 @@ import Notes from './components/Notes'
 //   })
 // )
 
+// const filtereSelected = (value) => {
+//   console.log(value)
+// }
+
 const App = () => {
   // const dispatch = useDispatch()
   // const notes = useSelector((state) => state)
@@ -101,6 +106,27 @@ const App = () => {
         <button type="submit">add</button>
       </form> */}
       <NoteForm />
+      <VisibilityFilter />
+      {/* <div>
+        <input
+          type="radio"
+          name="filter"
+          onChange={() => filtereSelected('ALL')}
+        />
+        all
+        <input
+          type="radio"
+          name="filter"
+          onChange={() => filtereSelected('IMPORTANT')}
+        />
+        important
+        <input
+          type="radio"
+          name="filter"
+          onChange={() => filtereSelected('NONIMPORTANT')}
+        />
+        nonimportant
+      </div> */}
       <Notes />
       {/* <ul>
         {notes.map((note) => (
