@@ -17,7 +17,7 @@ const AnecdoteList = () => {
   }
   return (
     <div>
-      {anecdotes
+      {[...anecdotes]
         .sort(
           (firstAnecdote, secondAnecdote) =>
             secondAnecdote.votes - firstAnecdote.votes
