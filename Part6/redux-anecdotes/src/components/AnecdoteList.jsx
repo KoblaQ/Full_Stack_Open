@@ -4,6 +4,7 @@ import {
   voteNotification,
   resetNotification,
 } from '../reducers/notificationReducer'
+import anecdoteService from '../services/anecdotes'
 
 const AnecdoteList = () => {
   const dispatch = useDispatch()
@@ -16,15 +17,23 @@ const AnecdoteList = () => {
     )
   })
 
-  const vote = (id) => {
-    dispatch(addVote(id))
+  const vote = async (id) => {
+    // const anecdote = anecdotes.find((n) => n.id === id).content // find the anecdote content
+    const anecdote = anecdotes.find((n) => n.id === id)
+    const updatedVote = { ...anecdote, votes: anecdote.votes + 1 }
 
-    const content = anecdotes.find((n) => n.id === id).content // find the anecdote content
+    const updatedAnecdote = await anecdoteService.updateAnecdote(updatedVote)
+    dispatch(addVote(updatedAnecdote))
+
+    const content = anecdote.content
+
     dispatch(voteNotification(content)) // set the notification for voted anecdote
+
     setTimeout(() => {
       dispatch(resetNotification())
     }, 5000)
   }
+
   return (
     <div>
       {[...anecdotes]
