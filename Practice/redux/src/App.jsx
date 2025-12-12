@@ -1,10 +1,14 @@
 // import { createStore } from 'redux'
 // // import noteReducer from './reducers/noteReducer'
 // import { createNote, toggleImportanceOf } from './reducers/noteReducer'
-// import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
 import NoteForm from './components/NoteForm'
 import Notes from './components/Notes'
 import VisibilityFilter from './components/VisibilityFilter'
+
+import { setNotes } from './reducers/noteReducer'
+import noteService from './services/notes'
 
 // const counterReducer = (state, action) => {
 //   if (action.type === 'INCREMENT') {
@@ -86,7 +90,11 @@ import VisibilityFilter from './components/VisibilityFilter'
 // }
 
 const App = () => {
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    noteService.getAll().then((notes) => dispatch(setNotes(notes)))
+  }, [dispatch])
   // const notes = useSelector((state) => state)
 
   // const addNote = (event) => {

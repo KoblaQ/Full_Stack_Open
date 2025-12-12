@@ -1,48 +1,55 @@
 import { createSlice, current } from '@reduxjs/toolkit'
 
-const initialState = [
-  {
-    content: 'reducer defines how redux store works',
-    important: true,
-    id: 1,
-  },
-  {
-    content: 'state of store can contain any data',
-    important: false,
-    id: 2,
-  },
-]
+// const initialState = [
+//   {
+//     content: 'reducer defines how redux store works',
+//     important: true,
+//     id: 1,
+//   },
+//   {
+//     content: 'state of store can contain any data',
+//     important: false,
+//     id: 2,
+//   },
+// ]
 
-const generateId = () => Number((Math.random() * 1000000).toFixed(0))
+// const generateId = () => Number((Math.random() * 1000000).toFixed(0))
 
 const noteSlice = createSlice({
   name: 'notes',
-  initialState,
+  initialState: [],
   reducers: {
     createNote(state, action) {
-      const content = action.payload
-      state.push({
-        content,
-        important: false,
-        id: generateId(),
-      })
+      // const content = action.payload
+      state.push(action.payload)
+      // state.push({
+      //   content,
+      //   important: false,
+      //   id: generateId(),
+      // })
     },
     toggleImportanceOf(state, action) {
-      const id = action.payload
-      const noteToChange = state.find((n) => n.id === id)
-      const changedNote = {
-        ...noteToChange,
-        important: !noteToChange.important,
-      }
+      // const id = action.payload
+      const changedNote = action.payload
+      // const noteToChange = state.find((n) => n.id === id)
+      // const changedNote = {
+      //   ...noteToChange,
+      //   important: !noteToChange.important,
+      // }
 
-      console.log(state) // prints unreadable version ( needs current to make it readable)
-      console.log(current(state))
-      return state.map((note) => (note.id !== id ? note : changedNote))
+      // console.log(state) // prints unreadable version ( needs current to make it readable)
+      // console.log(current(state))
+      return state.map((note) =>
+        note.id !== changedNote.id ? note : changedNote
+      )
+    },
+    setNotes(state, action) {
+      return action.payload
     },
   },
 })
 
-export const { createNote, toggleImportanceOf } = noteSlice.actions
+export const { createNote, toggleImportanceOf, setNotes } = noteSlice.actions
 export default noteSlice.reducer
 
 // const noteReducer = (state = initialState, action) => {
