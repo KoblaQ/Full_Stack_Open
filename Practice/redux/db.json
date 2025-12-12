@@ -23,12 +23,12 @@
     {
       "id": "98b9",
       "content": "new new note",
-      "important": true
+      "important": false
     },
     {
       "id": "2911",
       "content": "Keep it up",
-      "important": true
+      "important": false
     }
   ]
 }
