@@ -5,17 +5,14 @@ import Notification from './components/Notification'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { setAnecdotes } from './reducers/anecdoteReducer'
-import anecdoteServive from './services/anecdotes'
+import { initializeAnecdotes } from './reducers/anecdoteReducer'
 
 const App = () => {
   const dispatch = useDispatch()
 
   // Get the anecdotes from the database and set it into the redux state
   useEffect(() => {
-    anecdoteServive
-      .getAll()
-      .then((anecdotes) => dispatch(setAnecdotes(anecdotes)))
+    dispatch(initializeAnecdotes())
   }, [dispatch])
 
   return (
