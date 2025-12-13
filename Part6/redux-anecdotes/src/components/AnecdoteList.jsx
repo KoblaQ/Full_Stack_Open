@@ -1,10 +1,10 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { addVote } from '../reducers/anecdoteReducer'
+import { increaseVote } from '../reducers/anecdoteReducer'
 import {
   voteNotification,
   resetNotification,
 } from '../reducers/notificationReducer'
-import anecdoteService from '../services/anecdotes'
+// import anecdoteService from '../services/anecdotes'
 
 const AnecdoteList = () => {
   const dispatch = useDispatch()
@@ -21,8 +21,9 @@ const AnecdoteList = () => {
     const anecdote = anecdotes.find((n) => n.id === id)
     const updatedVote = { ...anecdote, votes: anecdote.votes + 1 }
 
-    const updatedAnecdote = await anecdoteService.updateAnecdote(updatedVote)
-    dispatch(addVote(updatedAnecdote))
+    // const updatedAnecdote = await anecdoteService.updateAnecdote(updatedVote)
+
+    dispatch(increaseVote(updatedVote))
 
     const content = anecdote.content
 
