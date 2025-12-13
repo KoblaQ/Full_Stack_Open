@@ -18,7 +18,6 @@ const AnecdoteList = () => {
   })
 
   const vote = async (id) => {
-    // const anecdote = anecdotes.find((n) => n.id === id).content // find the anecdote content
     const anecdote = anecdotes.find((n) => n.id === id)
     const updatedVote = { ...anecdote, votes: anecdote.votes + 1 }
 
