@@ -33,6 +33,7 @@ export const appendAnecdote = (content) => {
   return async (dispatch) => {
     const newAnecdote = await anecdoteService.createNew(content)
     dispatch(createAnecdote(newAnecdote))
+    return newAnecdote
   }
 }
 
@@ -40,8 +41,8 @@ export const increaseVote = (anecdoteObject) => {
   return async (dispatch) => {
     const updatedAnecdote = await anecdoteService.updateAnecdote(anecdoteObject)
     dispatch(addVote(updatedAnecdote))
+    return updatedAnecdote // return this for use in the notification thunk
   }
 }
 
-// export const { addVote } = anecdoteSlice.actions
 export default anecdoteSlice.reducer
