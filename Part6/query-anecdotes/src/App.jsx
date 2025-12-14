@@ -25,8 +25,8 @@ const App = () => {
     // console.log('vote')
     updateAnecdoteMutation.mutate({ ...anecdote, votes: anecdote.votes + 1 })
     notificationDispatch({
-      type: 'VOTE',
-      payload: anecdote.content,
+      type: 'SET',
+      payload: `anecdote '${anecdote.content}' voted`,
     })
     setTimeout(() => {
       notificationDispatch({ type: 'RESET' })

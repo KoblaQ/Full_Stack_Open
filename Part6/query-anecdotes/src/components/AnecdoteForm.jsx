@@ -12,6 +12,10 @@ const AnecdoteForm = () => {
       const anecdotes = queryClient.getQueryData(['anecdotes'])
       queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))
     },
+    onError: (error) => {
+      notificationDispatch({ type: 'SET', payload: error.message })
+      // console.log(error.message)
+    },
   })
 
   const { notificationDispatch } = useContext(NotificationContext)
@@ -23,8 +27,8 @@ const AnecdoteForm = () => {
     // console.log('new anecdote')
     newAnecdoteMutation.mutate({ content, votes: 0 })
     notificationDispatch({
-      type: 'CREATE',
-      payload: content,
+      type: 'SET',
+      payload: `anecdote '${content}' created`,
     })
     setTimeout(() => {
       notificationDispatch({ type: 'RESET' })
