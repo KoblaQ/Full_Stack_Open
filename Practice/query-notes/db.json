@@ -7,7 +7,7 @@
     },
     {
       "content": "useReducer is an alternative way for data management",
-      "important": false,
+      "important": true,
       "id": "2"
     }
   ]
