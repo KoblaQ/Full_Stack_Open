@@ -8,6 +8,20 @@ import {
   useMatch,
 } from 'react-router-dom'
 
+const Notification = ({ notification }) => {
+  return (
+    <div
+      style={{
+        borderStyle: 'solid',
+        borderColor: 'red',
+        display: 'inline-block',
+      }}
+    >
+      {notification}
+    </div>
+  )
+}
+
 const Menu = () => {
   const padding = {
     paddingRight: 5,
@@ -104,6 +118,8 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
+  const navigate = useNavigate()
+
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
@@ -116,6 +132,7 @@ const CreateNew = (props) => {
       info,
       votes: 0,
     })
+    navigate('/')
   }
 
   return (
@@ -170,11 +187,15 @@ const App = () => {
     },
   ])
 
-  const [notification, setNotification] = useState('')
+  const [notification, setNotification] = useState(null)
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
+    setNotification(`a new anecdote '${anecdote.content}' created!`)
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
   }
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id)
@@ -199,6 +220,7 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      {notification && <Notification notification={notification} />}
       <Routes>
         {/* <Route path="/" element={<Menu />} /> */}
         <Route
@@ -206,7 +228,12 @@ const App = () => {
           element={<Anecdote anecdote={anecdote} />}
         />
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
-        <Route path="/create" element={<CreateNew addNew={addNew} />} />
+        <Route
+          path="/create"
+          element={
+            <CreateNew addNew={addNew} setNotification={setNotification} />
+          }
+        />
         <Route
           path="/anecdotes"
           element={<AnecdoteList anecdotes={anecdotes} />}
