@@ -7,6 +7,7 @@ import {
   useNavigate,
   useMatch,
 } from 'react-router-dom'
+import { useField } from './hooks/index'
 
 const Notification = ({ notification }) => {
   return (
@@ -120,16 +121,21 @@ const Footer = () => (
 const CreateNew = (props) => {
   const navigate = useNavigate()
 
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  // Custom hook implemented
+  const content = useField('text')
+  const author = useField('text')
+  const info = useField('text')
+
+  // const [content, setContent] = useState('')
+  // const [author, setAuthor] = useState('')
+  // const [info, setInfo] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0,
     })
     navigate('/')
@@ -141,27 +147,30 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input
+          <input {...content} />
+          {/* <input
             name="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-          />
+          /> */}
         </div>
         <div>
           author
-          <input
+          <input {...author} />
+          {/* <input
             name="author"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
-          />
+          /> */}
         </div>
         <div>
           url for more info
-          <input
+          <input {...info} />
+          {/* <input
             name="info"
             value={info}
             onChange={(e) => setInfo(e.target.value)}
-          />
+          /> */}
         </div>
         <button>create</button>
       </form>
