@@ -133,12 +133,20 @@ const CreateNew = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content: content.value,
+      content: content.value, // get the value from the content object
       author: author.value,
       info: info.value,
       votes: 0,
     })
     navigate('/')
+  }
+
+  const handleResetForm = (e) => {
+    e.preventDefault()
+
+    content.reset()
+    author.reset()
+    info.reset()
   }
 
   return (
@@ -172,7 +180,10 @@ const CreateNew = (props) => {
             onChange={(e) => setInfo(e.target.value)}
           /> */}
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
+        <button type="reset" onClick={handleResetForm}>
+          reset
+        </button>
       </form>
     </div>
   )
