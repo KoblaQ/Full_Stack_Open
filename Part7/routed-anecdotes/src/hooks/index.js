@@ -9,5 +9,6 @@ export const useField = (type) => {
 
   const reset = () => setValue('') // Clear the fields
 
-  return { type, value, onChange, reset }
+  // return { type, value, onChange, reset }
+  return { inputProps: { type, value, onChange }, reset }
 }

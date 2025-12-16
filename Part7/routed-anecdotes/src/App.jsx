@@ -29,21 +29,12 @@ const Menu = () => {
   }
   return (
     <div>
-      {/* <a href="#" style={padding}>
-        anecdotes
-      </a> */}
       <Link style={padding} to={`/anecdotes`}>
         anecdotes
       </Link>
       <Link to={`/create`} style={padding}>
         create new
       </Link>
-      {/* <a href="#" style={padding}>
-        create new
-        </a> */}
-      {/* <a href="#" style={padding}>
-        about
-      </a> */}
       <Link to={`/about`} style={padding}>
         about
       </Link>
@@ -126,16 +117,12 @@ const CreateNew = (props) => {
   const author = useField('text')
   const info = useField('text')
 
-  // const [content, setContent] = useState('')
-  // const [author, setAuthor] = useState('')
-  // const [info, setInfo] = useState('')
-
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content: content.value, // get the value from the content object
-      author: author.value,
-      info: info.value,
+      content: content.inputProps.value, // get the value from the content object
+      author: author.inputProps.value,
+      info: info.inputProps.value,
       votes: 0,
     })
     navigate('/')
@@ -155,30 +142,15 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...content} />
-          {/* <input
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          /> */}
+          <input {...content.inputProps} />
         </div>
         <div>
           author
-          <input {...author} />
-          {/* <input
-            name="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          /> */}
+          <input {...author.inputProps} />
         </div>
         <div>
           url for more info
-          <input {...info} />
-          {/* <input
-            name="info"
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-          /> */}
+          <input {...info.inputProps} />
         </div>
         <button type="submit">create</button>
         <button type="reset" onClick={handleResetForm}>
@@ -242,7 +214,6 @@ const App = () => {
       <Menu />
       {notification && <Notification notification={notification} />}
       <Routes>
-        {/* <Route path="/" element={<Menu />} /> */}
         <Route
           path="/anecdotes/:id"
           element={<Anecdote anecdote={anecdote} />}
@@ -262,14 +233,6 @@ const App = () => {
       </Routes>
       <Footer />
     </div>
-    // <div>
-    //   <h1>Software anecdotes</h1>
-    //   <Menu />
-    //   <AnecdoteList anecdotes={anecdotes} />
-    //   <About />
-    //   <CreateNew addNew={addNew} />
-    //   <Footer />
-    // </div>
   )
 }
 
