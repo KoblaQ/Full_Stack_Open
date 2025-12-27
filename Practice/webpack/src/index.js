@@ -3,7 +3,7 @@ import 'regenerator-runtime/runtime.js'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-// import './index.css'
+import './index.css'
 
 const hello = (name) => {
   console.log(`hello ${name}`)
