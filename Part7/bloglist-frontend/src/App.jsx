@@ -9,11 +9,13 @@ import LoginForm from './components/LoginForm'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs, setBlogs } from './reducers/blogReducer'
 
 const App = () => {
   const dispatch = useDispatch()
 
-  const [blogs, setBlogs] = useState([])
+  // const [blogs, setBlogs] = useState([])
+  const blogs = useSelector((state) => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -23,9 +25,13 @@ const App = () => {
   //   type: null,
   // })
 
+  // useEffect(() => {
+  //   blogService.getAll().then((blogs) => setBlogs(blogs))
+  // }, [])
+
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   // UseEffect for the user in localStorage
   useEffect(() => {
@@ -43,7 +49,7 @@ const App = () => {
   // create a blog post helper function
   const addBlog = async (blogObject) => {
     const createdBlog = await blogService.create(blogObject)
-    setBlogs(blogs.concat(createdBlog))
+    dispatch(setBlogs(blogs.concat(createdBlog)))
 
     // setNotification({
     //   message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
@@ -71,14 +77,16 @@ const App = () => {
     // console.log('Updating blog:', blogObject)
     const updatedBlog = await blogService.update(blogObject.id, blogObject)
     // Update the blog state to reflect the new change in likes
-    setBlogs(
-      blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+    dispatch(
+      setBlogs(
+        blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+      )
     )
   }
   // Delete blog
   const deleteBlog = async (id) => {
     await blogService.deleteBlog(id)
-    setBlogs(blogs.filter((blog) => blog.id !== id)) // Refresh the blogs after deletion
+    dispatch(setBlogs(blogs.filter((blog) => blog.id !== id))) // Refresh the blogs after deletion
   }
 
   // Create Blog form
@@ -161,7 +169,7 @@ const App = () => {
 
       {
         //Sort the blogs based on the number of likes before rendering them
-        blogs
+        [...blogs]
           .sort((firstBlog, secondBlog) => secondBlog.likes - firstBlog.likes)
           .map((blog) => (
             <Blog
