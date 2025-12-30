@@ -7,15 +7,21 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 
+import { useDispatch, useSelector } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
+
 const App = () => {
+  const dispatch = useDispatch()
+
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({
-    message: null,
-    type: null,
-  })
+  const notification = useSelector((state) => state.notification)
+  // const [notification, setNotification] = useState({
+  //   message: null,
+  //   type: null,
+  // })
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -39,13 +45,23 @@ const App = () => {
     const createdBlog = await blogService.create(blogObject)
     setBlogs(blogs.concat(createdBlog))
 
-    setNotification({
-      message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
-      type: 'success',
-    })
-    // Make the blog notification vanish after 5 seconds
+    // setNotification({
+    //   message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+    //   type: 'success',
+    // })
+    // // Make the blog notification vanish after 5 seconds
+    // setTimeout(() => {
+    //   setNotification({ message: null, type: null })
+    // }, 5000)
+    dispatch(
+      setNotification({
+        message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+        type: 'success',
+      })
+    )
+
     setTimeout(() => {
-      setNotification({ message: null, type: null })
+      dispatch(setNotification({ message: null, type: null }))
     }, 5000)
     blogFormRef.current.toggleVisibility() // Hide the blog form after submission
   }
@@ -81,7 +97,7 @@ const App = () => {
       setUsername={setUsername}
       password={password}
       setPassword={setPassword}
-      notification={notification}
+      notification={notification} // Nolonger needed to be passed as a prop because of redux
       handleLogin={handleLogin}
     />
   )
@@ -98,9 +114,20 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch {
-      setNotification({ message: 'wrong username or password', type: 'error' })
+      // setNotification({ message: 'wrong username or password', type: 'error' })
+      // setTimeout(() => {
+      //   setNotification({ message: null, type: null })
+      // }, 5000)
+
+      dispatch(
+        setNotification({
+          message: 'wrong username or password',
+          type: 'error',
+        })
+      )
+
       setTimeout(() => {
-        setNotification({ message: null, type: null })
+        dispatch(setNotification({ message: null, type: null }))
       }, 5000)
     }
   }
@@ -117,7 +144,9 @@ const App = () => {
   }
   return (
     <div>
-      <Notification message={notification.message} type={notification.type} />
+      {notification && notification.message && (
+        <Notification message={notification.message} type={notification.type} />
+      )}
       <h2>blogs</h2>
       {user && (
         <div>
