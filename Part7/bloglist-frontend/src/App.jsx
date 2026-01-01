@@ -7,13 +7,20 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 
+// Imports for Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, setBlogs } from './reducers/blogReducer'
 import { initializeUser, setUser } from './reducers/userReducer'
 
+// Imports for React Query and Context
+import NotificationContext from './components/NotificationContext'
+import { useContext } from 'react'
+// import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+
 const App = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch() // REDUX
+  // const queryClient = useQueryClient() // REACT QUERY
 
   // const [blogs, setBlogs] = useState([])
   const blogs = useSelector((state) => state.blogs)
@@ -21,7 +28,10 @@ const App = () => {
   const [password, setPassword] = useState('')
   const user = useSelector((state) => state.user)
   // const [user, setUser] = useState(null)
-  const notification = useSelector((state) => state.notification)
+  // const notification = useSelector((state) => state.notification) // REDUX NOTIFICATION
+  const { notification, notificationDispatch } = useContext(NotificationContext)
+
+  // USESTATE NOTIFICATION
   // const [notification, setNotification] = useState({
   //   message: null,
   //   type: null,
@@ -54,6 +64,7 @@ const App = () => {
     const createdBlog = await blogService.create(blogObject)
     dispatch(setBlogs(blogs.concat(createdBlog)))
 
+    // USE STATE NOTIFICATION
     // setNotification({
     //   message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
     //   type: 'success',
@@ -62,15 +73,27 @@ const App = () => {
     // setTimeout(() => {
     //   setNotification({ message: null, type: null })
     // }, 5000)
-    dispatch(
-      setNotification({
+
+    // REDUX NOTIFICATION
+    // dispatch(
+    //   setNotification({
+    //     message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+    //     type: 'success',
+    //   })
+    // )
+
+    // REACT QUERY AND CONTEXT NOTIFICATIONS
+    notificationDispatch({
+      type: 'SET',
+      payload: {
         message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
         type: 'success',
-      })
-    )
+      },
+    })
 
     setTimeout(() => {
-      dispatch(setNotification({ message: null, type: null }))
+      // dispatch(setNotification({ message: null, type: null }))
+      notificationDispatch({ type: 'RESET' })
     }, 5000)
     blogFormRef.current.toggleVisibility() // Hide the blog form after submission
   }
@@ -108,7 +131,7 @@ const App = () => {
       setUsername={setUsername}
       password={password}
       setPassword={setPassword}
-      notification={notification} // Nolonger needed to be passed as a prop because of redux
+      // notification={notification} // Nolonger needed to be passed as a prop because of redux OR react Query CONTEXT
       handleLogin={handleLogin}
     />
   )
@@ -130,15 +153,26 @@ const App = () => {
       //   setNotification({ message: null, type: null })
       // }, 5000)
 
-      dispatch(
-        setNotification({
+      // REDUX NOTIFICATION
+      // dispatch(
+      //   setNotification({
+      //     message: 'wrong username or password',
+      //     type: 'error',
+      //   })
+      // )
+
+      // REACT QUERY AND CONTEXT NOTIFICATIONS
+      notificationDispatch({
+        type: 'SET',
+        payload: {
           message: 'wrong username or password',
           type: 'error',
-        })
-      )
+        },
+      })
 
       setTimeout(() => {
-        dispatch(setNotification({ message: null, type: null }))
+        // dispatch(setNotification({ message: null, type: null }))
+        notificationDispatch({ type: 'RESET' })
       }, 5000)
     }
   }
@@ -156,7 +190,8 @@ const App = () => {
   return (
     <div>
       {notification && notification.message && (
-        <Notification message={notification.message} type={notification.type} />
+        <Notification />
+        // <Notification message={notification.message} type={notification.type} />
       )}
       <h2>blogs</h2>
       {user && (

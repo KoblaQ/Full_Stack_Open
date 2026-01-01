@@ -6,12 +6,13 @@ const LoginForm = ({
   username,
   setUsername,
   handleLogin,
-  notification,
+  // notification,
 }) => {
   return (
     <form onSubmit={handleLogin}>
       <h2>log in to application</h2>
-      <Notification message={notification.message} type={notification.type} />
+      <Notification />
+      {/* <Notification message={notification.message} type={notification.type} /> */}
       <div>
         <label>
           username
