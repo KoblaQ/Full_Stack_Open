@@ -10,6 +10,7 @@ import LoginForm from './components/LoginForm'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, setBlogs } from './reducers/blogReducer'
+import { initializeUser, setUser } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -18,7 +19,8 @@ const App = () => {
   const blogs = useSelector((state) => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const user = useSelector((state) => state.user)
+  // const [user, setUser] = useState(null)
   const notification = useSelector((state) => state.notification)
   // const [notification, setNotification] = useState({
   //   message: null,
@@ -35,12 +37,13 @@ const App = () => {
 
   // UseEffect for the user in localStorage
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token) // Get and set the user jwt from the localStorage
-    }
+    dispatch(initializeUser())
+    // const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
+    // if (loggedUserJSON) {
+    //   const user = JSON.parse(loggedUserJSON)
+    //   setUser(user)
+    //   blogService.setToken(user.token) // Get and set the user jwt from the localStorage
+    // }
   }, [])
 
   // UseRef
@@ -116,8 +119,8 @@ const App = () => {
     try {
       const user = await loginService.login({ username, password })
 
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user)) // Save the logged in user to local storage.
-      setUser(user)
+      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user)) // Save the logged in user to local storage.
+      dispatch(setUser(user))
       blogService.setToken(user.token) // set the token for the user
       setUsername('')
       setPassword('')
@@ -143,8 +146,8 @@ const App = () => {
   // Logout Handler
   const handleLogout = (event) => {
     event.preventDefault()
-    window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
+    window.localStorage.removeItem('loggedBlogAppUser')
+    dispatch(setUser(null))
   }
 
   if (user === null) {
