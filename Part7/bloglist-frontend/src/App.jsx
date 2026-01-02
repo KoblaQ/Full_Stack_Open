@@ -22,18 +22,6 @@ const App = () => {
   const dispatch = useDispatch() // REDUX
   const queryClient = useQueryClient() // REACT QUERY
 
-  const updateMutation = useMutation({
-    mutationFn: blogService.update,
-    onSuccess: (updatedBlog) => {
-      const blogs = queryClient.getQueryData(['blogs'])
-      // Create an updated list of blogs to reset the data with
-      const updatedBlogList = blogs.map((blog) =>
-        blog.id !== updatedBlog.id ? blog : updatedBlog
-      )
-      queryClient.setQueryData(['blogs'], updatedBlogList)
-    },
-  })
-
   // const [blogs, setBlogs] = useState([])
   // const blogs = useSelector((state) => state.blogs) // REDUX
   const [username, setUsername] = useState('')
@@ -89,6 +77,8 @@ const App = () => {
     mutationFn: blogService.create,
     onSuccess: (createdBlog) => {
       const blogs = queryClient.getQueryData(['blogs'])
+
+      // const updatedBlogList = blogs.concat(createdBlog)
       queryClient.setQueryData(['blogs'], blogs.concat(createdBlog))
     },
   })
@@ -134,20 +124,40 @@ const App = () => {
     blogFormRef.current.toggleVisibility() // Hide the blog form after submission
   }
 
+  // REACT QUERY For Update
+  const updateMutation = useMutation({
+    mutationFn: ({ id, ...blogObject }) => blogService.update(id, blogObject),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+  })
+
   // Update Blog likes
   const updateBlog = async (blogObject) => {
-    const updatedBlog = await blogService.update(blogObject.id, blogObject)
+    // const updatedBlog = await blogService.update(blogObject.id, blogObject)
     // Update the blog state to reflect the new change in likes
-    dispatch(
-      setBlogs(
-        blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
-      )
-    )
+    // dispatch(
+    //   setBlogs(
+    //     blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+    //   )
+    // )
+
+    updateMutation.mutate({ id: blogObject.id, ...blogObject })
   }
+
+  // Delete Mutation React Query
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.deleteBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+  })
+
   // Delete blog
   const deleteBlog = async (id) => {
-    await blogService.deleteBlog(id)
-    dispatch(setBlogs(blogs.filter((blog) => blog.id !== id))) // Refresh the blogs after deletion
+    // await blogService.deleteBlog(id)
+    // dispatch(setBlogs(blogs.filter((blog) => blog.id !== id))) // Refresh the blogs after deletion (REDUX)
+    deleteBlogMutation.mutate(id) // REACT QUERY
   }
 
   // Create Blog form
