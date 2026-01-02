@@ -8,25 +8,27 @@ import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 
 // Imports for Redux
-import { useDispatch, useSelector } from 'react-redux'
-import { setNotification } from './reducers/notificationReducer'
-import { initializeBlogs, setBlogs } from './reducers/blogReducer'
-import { initializeUser, setUser } from './reducers/userReducer'
+// import { useDispatch, useSelector } from 'react-redux'
+// import { setNotification } from './reducers/notificationReducer'
+// import { initializeBlogs, setBlogs } from './reducers/blogReducer'
+// import { initializeUser, setUser } from './reducers/userReducer'
 
 // Imports for React Query and Context
 import NotificationContext from './components/NotificationContext'
+import UserContext from './components/UserContext'
 import { useContext } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 const App = () => {
-  const dispatch = useDispatch() // REDUX
+  // const dispatch = useDispatch() // REDUX
   const queryClient = useQueryClient() // REACT QUERY
 
   // const [blogs, setBlogs] = useState([])
   // const blogs = useSelector((state) => state.blogs) // REDUX
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const user = useSelector((state) => state.user)
+  // const user = useSelector((state) => state.user) // REDUX
+  const { user, userDispatch } = useContext(UserContext)
   // const [user, setUser] = useState(null)
   // const notification = useSelector((state) => state.notification) // REDUX NOTIFICATION
   const { notification, notificationDispatch } = useContext(NotificationContext)
@@ -43,9 +45,9 @@ const App = () => {
   // }, [])
 
   // REDUX
-  useEffect(() => {
-    dispatch(initializeBlogs())
-  }, [dispatch])
+  // useEffect(() => {
+  //   dispatch(initializeBlogs())
+  // }, [dispatch])
 
   // REACT QUERY
   const blogResult = useQuery({
@@ -60,7 +62,17 @@ const App = () => {
 
   // UseEffect for the user in localStorage
   useEffect(() => {
-    dispatch(initializeUser())
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      userDispatch({
+        type: 'SET',
+        payload: user,
+      })
+    }
+
+    // dispatch(initializeUser()) // REDUX
+
     // const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     // if (loggedUserJSON) {
     //   const user = JSON.parse(loggedUserJSON)
@@ -188,7 +200,12 @@ const App = () => {
       const user = await loginService.login({ username, password })
 
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user)) // Save the logged in user to local storage.
-      dispatch(setUser(user))
+      // dispatch(setUser(user)) // REDUX
+
+      userDispatch({
+        type: 'SET',
+        payload: user,
+      })
       blogService.setToken(user.token) // set the token for the user
       setUsername('')
       setPassword('')
@@ -226,7 +243,10 @@ const App = () => {
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogAppUser')
-    dispatch(setUser(null))
+    // dispatch(setUser(null)) // REDUX
+    userDispatch({
+      type: 'RESET',
+    })
   }
 
   if (user === null) {
