@@ -16,14 +16,26 @@ import { initializeUser, setUser } from './reducers/userReducer'
 // Imports for React Query and Context
 import NotificationContext from './components/NotificationContext'
 import { useContext } from 'react'
-// import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 const App = () => {
   const dispatch = useDispatch() // REDUX
-  // const queryClient = useQueryClient() // REACT QUERY
+  const queryClient = useQueryClient() // REACT QUERY
+
+  const updateMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: (updatedBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      // Create an updated list of blogs to reset the data with
+      const updatedBlogList = blogs.map((blog) =>
+        blog.id !== updatedBlog.id ? blog : updatedBlog
+      )
+      queryClient.setQueryData(['blogs'], updatedBlogList)
+    },
+  })
 
   // const [blogs, setBlogs] = useState([])
-  const blogs = useSelector((state) => state.blogs)
+  // const blogs = useSelector((state) => state.blogs) // REDUX
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const user = useSelector((state) => state.user)
@@ -37,13 +49,26 @@ const App = () => {
   //   type: null,
   // })
 
+  // USE STATE
   // useEffect(() => {
   //   blogService.getAll().then((blogs) => setBlogs(blogs))
   // }, [])
 
+  // REDUX
   useEffect(() => {
     dispatch(initializeBlogs())
   }, [dispatch])
+
+  // REACT QUERY
+  const blogResult = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+    refetchOnWindowFocus: false, // disable refetching when window is focused (ie. tabs are changed)
+    retry: 1,
+  })
+  const blogs = blogResult.data
+
+  // console.log(JSON.parse(JSON.stringify(blogResult)))
 
   // UseEffect for the user in localStorage
   useEffect(() => {
@@ -59,10 +84,21 @@ const App = () => {
   // UseRef
   const blogFormRef = useRef() // Passed as a prop to the Toggable Component
 
+  // REACT QUERY ADD BLOG
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (createdBlog) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.concat(createdBlog))
+    },
+  })
+
   // create a blog post helper function
   const addBlog = async (blogObject) => {
-    const createdBlog = await blogService.create(blogObject)
-    dispatch(setBlogs(blogs.concat(createdBlog)))
+    // const createdBlog = await blogService.create(blogObject)
+    // dispatch(setBlogs(blogs.concat(createdBlog))) // REDUX
+
+    newBlogMutation.mutate(blogObject) // REACT QUERY
 
     // USE STATE NOTIFICATION
     // setNotification({
@@ -100,7 +136,6 @@ const App = () => {
 
   // Update Blog likes
   const updateBlog = async (blogObject) => {
-    // console.log('Updating blog:', blogObject)
     const updatedBlog = await blogService.update(blogObject.id, blogObject)
     // Update the blog state to reflect the new change in likes
     dispatch(
@@ -187,6 +222,13 @@ const App = () => {
   if (user === null) {
     return loginForm()
   }
+
+  if (blogResult.isLoading) {
+    return <div>Loading data...</div>
+  } else if (blogResult.isError) {
+    return <div>blog service not available due to problems in server</div>
+  }
+
   return (
     <div>
       {notification && notification.message && (
@@ -207,7 +249,8 @@ const App = () => {
 
       {
         //Sort the blogs based on the number of likes before rendering them
-        [...blogs]
+        // [...blogs] // REDUX NEEDS Spread out
+        blogs
           .sort((firstBlog, secondBlog) => secondBlog.likes - firstBlog.likes)
           .map((blog) => (
             <Blog
