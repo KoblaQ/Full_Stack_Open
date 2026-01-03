@@ -8,6 +8,7 @@ import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
+import User from './components/User'
 import UserList from './components/UserList'
 
 // React-Router imports
@@ -306,6 +307,7 @@ const App = () => {
             />
           }
         />
+        <Route path="/users/:id" element={<User users={users} />} />
         <Route path="/users" element={<UserList users={users} />} />
       </Routes>
     </div>
