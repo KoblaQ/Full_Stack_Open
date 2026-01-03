@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import UserContext from './UserContext'
 
@@ -6,7 +6,9 @@ const BlogView = ({ blogs, updateBlog, deleteBlog }) => {
   // const user = useContext(UserContext)
   const id = useParams().id
   const blog = blogs.find((b) => b.id === id)
+  // console.log(blog)
 
+  const [blogComment, setBlogComment] = useState('')
   // Update the likes in the blog object
   const updateLikes = (event) => {
     event.preventDefault()
@@ -35,6 +37,20 @@ const BlogView = ({ blogs, updateBlog, deleteBlog }) => {
     marginBottom: 5,
   }
 
+  const handleAddComment = (event) => {
+    event.preventDefault()
+
+    console.log(blogComment)
+    // setBlogComment(event.target)
+    const updatedBlog = {
+      ...blog,
+      comments: blog.comments.concat(blogComment),
+    }
+    setBlogComment('')
+    console.log(updatedBlog)
+    updateBlog(updatedBlog)
+  }
+
   return (
     <div style={blogStyle} className="blogDetails">
       <div>
@@ -49,7 +65,25 @@ const BlogView = ({ blogs, updateBlog, deleteBlog }) => {
             {blog.likes} likes <button onClick={updateLikes}>like</button>
           </p>
           <p>added by {blog.user.name}</p>
-
+          {/* Contidionally render the comments */}
+          {/* {blog.comments.length > 0 && <h3>comments</h3>} */}
+          <h3>comments</h3>
+          <p>
+            <input
+              name="comment"
+              type="text"
+              value={blogComment}
+              onChange={({ target }) => setBlogComment(target.value)}
+            />{' '}
+            <button onClick={handleAddComment}>add comment</button>
+          </p>
+          <div>
+            <ul>
+              {blog.comments.map((comment, index) => (
+                <li key={index}>{comment}</li>
+              ))}
+            </ul>
+          </div>
           {/* {blog.user.name === user.user.name && (
             <button
               style={{ backgroundColor: '#24A0ED' }}
