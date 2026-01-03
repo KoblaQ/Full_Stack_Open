@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, use } from 'react'
-// import Blog from './components/Blog'
+import { useState, useEffect, useRef } from 'react'
+import BlogView from './components/BlogView'
 import BlogList from './components/BlogList'
 import blogService from './services/blogs'
 import userService from './services/users'
@@ -46,7 +46,7 @@ const App = () => {
   //   type: null,
   // })
 
-  // USE STATE
+  // USE STATE Initialization of blogs
   // useEffect(() => {
   //   blogService.getAll().then((blogs) => setBlogs(blogs))
   // }, [])
@@ -78,6 +78,7 @@ const App = () => {
 
   // UseEffect for the user in localStorage
   useEffect(() => {
+    // REACT QUERY
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -90,6 +91,7 @@ const App = () => {
 
     // dispatch(initializeUser()) // REDUX
 
+    // USE STATE
     // const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     // if (loggedUserJSON) {
     //   const user = JSON.parse(loggedUserJSON)
@@ -189,7 +191,7 @@ const App = () => {
     deleteBlogMutation.mutate(id) // REACT QUERY
   }
 
-  // Create Blog form
+  // Create Blog form and add a ref for useRef
   const blogForm = () => {
     return (
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
@@ -309,6 +311,16 @@ const App = () => {
         />
         <Route path="/users/:id" element={<User users={users} />} />
         <Route path="/users" element={<UserList users={users} />} />
+        <Route
+          path="/blogs/:id"
+          element={
+            <BlogView
+              blogs={blogs}
+              updateBlog={updateBlog}
+              deleteBlog={deleteBlog}
+            />
+          }
+        />
       </Routes>
     </div>
   )
