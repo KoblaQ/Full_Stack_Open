@@ -10,6 +10,7 @@ import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import User from './components/User'
 import UserList from './components/UserList'
+import Menu from './components/Menu'
 
 // React-Router imports
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
@@ -284,16 +285,18 @@ const App = () => {
         <Notification />
         // <Notification message={notification.message} type={notification.type} />
       )}
-      <h2>blogs</h2>
+      <h2>blog app</h2>
 
-      {user && (
+      {/* {user && (
         <div>
           <p>
             {user.name} logged in
             <button onClick={handleLogout}>logout</button>
           </p>
         </div>
-      )}
+      )} */}
+
+      <Menu handleLogout={handleLogout} />
 
       {/* {blogForm()} */}
 
