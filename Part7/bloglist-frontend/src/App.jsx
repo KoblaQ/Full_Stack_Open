@@ -1,11 +1,17 @@
-import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+import { useState, useEffect, useRef, use } from 'react'
+// import Blog from './components/Blog'
+import BlogList from './components/BlogList'
 import blogService from './services/blogs'
+import userService from './services/users'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
+import UserList from './components/UserList'
+
+// React-Router imports
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 
 // Imports for Redux
 // import { useDispatch, useSelector } from 'react-redux'
@@ -56,9 +62,18 @@ const App = () => {
     refetchOnWindowFocus: false, // disable refetching when window is focused (ie. tabs are changed)
     retry: 1,
   })
-  const blogs = blogResult.data
-
+  const blogs = blogResult.data || []
   // console.log(JSON.parse(JSON.stringify(blogResult)))
+
+  // REACT QUERY USERS
+  const usersResult = useQuery({
+    queryKey: ['users'],
+    queryFn: userService.getAll,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  })
+
+  const users = usersResult.data || []
 
   // UseEffect for the user in localStorage
   useEffect(() => {
@@ -69,6 +84,7 @@ const App = () => {
         type: 'SET',
         payload: user,
       })
+      blogService.setToken(user.token) // Get and set the user jwt from the localStorage
     }
 
     // dispatch(initializeUser()) // REDUX
@@ -266,6 +282,7 @@ const App = () => {
         // <Notification message={notification.message} type={notification.type} />
       )}
       <h2>blogs</h2>
+
       {user && (
         <div>
           <p>
@@ -275,23 +292,22 @@ const App = () => {
         </div>
       )}
 
-      {blogForm()}
+      {/* {blogForm()} */}
 
-      {
-        //Sort the blogs based on the number of likes before rendering them
-        // [...blogs] // REDUX NEEDS Spread out
-        blogs
-          .sort((firstBlog, secondBlog) => secondBlog.likes - firstBlog.likes)
-          .map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <BlogList
+              blogs={blogs}
               updateBlog={updateBlog}
               deleteBlog={deleteBlog}
-              user={user}
+              addBlog={addBlog}
             />
-          ))
-      }
+          }
+        />
+        <Route path="/users" element={<UserList users={users} />} />
+      </Routes>
     </div>
   )
 }
