@@ -1,4 +1,5 @@
 import Notification from './Notification'
+import { TextField, Button } from '@mui/material'
 
 const LoginForm = ({
   password,
@@ -14,7 +15,13 @@ const LoginForm = ({
       <Notification />
       {/* <Notification message={notification.message} type={notification.type} /> */}
       <div>
-        <label>
+        <TextField
+          label="username"
+          type="text"
+          value={username}
+          onChange={({ target }) => setUsername(target.value)}
+        />
+        {/* <label>
           username
           <input
             name="username"
@@ -22,10 +29,16 @@ const LoginForm = ({
             value={username}
             onChange={({ target }) => setUsername(target.value)}
           />
-        </label>
+        </label> */}
       </div>
       <div>
-        <label>
+        <TextField
+          label="password"
+          type="password"
+          value={password}
+          onChange={({ target }) => setPassword(target.value)}
+        />
+        {/* <label>
           password{' '}
           <input
             name="password"
@@ -33,9 +46,12 @@ const LoginForm = ({
             value={password}
             onChange={({ target }) => setPassword(target.value)}
           />
-        </label>
+        </label> */}
       </div>
-      <button type="submit">login</button>
+      <Button variant="contained" color="primary" type="submit">
+        login
+      </Button>
+      {/* <button type="submit">login</button> */}
     </form>
   )
 }

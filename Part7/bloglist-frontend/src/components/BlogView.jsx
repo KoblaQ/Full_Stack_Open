@@ -2,6 +2,9 @@ import { useContext, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import UserContext from './UserContext'
 
+import { Button, TextField } from '@mui/material'
+import ThumbUpIcon from '@mui/icons-material/ThumbUp'
+
 const BlogView = ({ blogs, updateBlog, deleteBlog }) => {
   // const user = useContext(UserContext)
   const id = useParams().id
@@ -40,14 +43,14 @@ const BlogView = ({ blogs, updateBlog, deleteBlog }) => {
   const handleAddComment = (event) => {
     event.preventDefault()
 
-    console.log(blogComment)
+    // console.log(blogComment)
     // setBlogComment(event.target)
     const updatedBlog = {
       ...blog,
       comments: blog.comments.concat(blogComment),
     }
     setBlogComment('')
-    console.log(updatedBlog)
+    // console.log(updatedBlog)
     updateBlog(updatedBlog)
   }
 
@@ -62,21 +65,32 @@ const BlogView = ({ blogs, updateBlog, deleteBlog }) => {
             <Link to={blog.url}>{blog.url}</Link>
           </p>
           <p className="blogLikes">
-            {blog.likes} likes <button onClick={updateLikes}>like</button>
+            {blog.likes} likes{' '}
+            <Button
+              size="small"
+              variant="contained"
+              endIcon={<ThumbUpIcon />}
+              onClick={updateLikes}
+            >
+              like
+            </Button>
           </p>
           <p>added by {blog.user.name}</p>
           {/* Contidionally render the comments */}
           {/* {blog.comments.length > 0 && <h3>comments</h3>} */}
           <h3>comments</h3>
-          <p>
-            <input
-              name="comment"
-              type="text"
-              value={blogComment}
-              onChange={({ target }) => setBlogComment(target.value)}
-            />{' '}
-            <button onClick={handleAddComment}>add comment</button>
-          </p>
+          {/* <p> */}
+          <TextField
+            name="comment"
+            label="comment"
+            helperText="Please leave a comment here"
+            value={blogComment}
+            onChange={({ target }) => setBlogComment(target.value)}
+          />{' '}
+          <Button size="small" variant="contained" onClick={handleAddComment}>
+            add comment
+          </Button>
+          {/* </p> */}
           <div>
             <ul>
               {blog.comments.map((comment, index) => (

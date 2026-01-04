@@ -27,6 +27,9 @@ import UserContext from './components/UserContext'
 import { useContext } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
+// CSS
+import { Container } from '@mui/material'
+
 const App = () => {
   // const dispatch = useDispatch() // REDUX
   const queryClient = useQueryClient() // REACT QUERY
@@ -280,14 +283,15 @@ const App = () => {
   }
 
   return (
-    <div>
-      {notification && notification.message && (
-        <Notification />
-        // <Notification message={notification.message} type={notification.type} />
-      )}
-      <h2>blog app</h2>
+    <Container>
+      <div>
+        {notification && notification.message && (
+          <Notification />
+          // <Notification message={notification.message} type={notification.type} />
+        )}
+        <h2>blog app</h2>
 
-      {/* {user && (
+        {/* {user && (
         <div>
           <p>
             {user.name} logged in
@@ -296,36 +300,38 @@ const App = () => {
         </div>
       )} */}
 
-      <Menu handleLogout={handleLogout} />
+        <Menu handleLogout={handleLogout} />
 
-      {/* {blogForm()} */}
+        {/* {blogForm()} */}
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <BlogList
-              blogs={blogs}
-              updateBlog={updateBlog}
-              deleteBlog={deleteBlog}
-              addBlog={addBlog}
-            />
-          }
-        />
-        <Route path="/users/:id" element={<User users={users} />} />
-        <Route path="/users" element={<UserList users={users} />} />
-        <Route
-          path="/blogs/:id"
-          element={
-            <BlogView
-              blogs={blogs}
-              updateBlog={updateBlog}
-              deleteBlog={deleteBlog}
-            />
-          }
-        />
-      </Routes>
-    </div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <BlogList
+                blogs={blogs}
+                updateBlog={updateBlog}
+                deleteBlog={deleteBlog}
+                // addBlog={addBlog}
+                blogForm={blogForm}
+              />
+            }
+          />
+          <Route path="/users/:id" element={<User users={users} />} />
+          <Route path="/users" element={<UserList users={users} />} />
+          <Route
+            path="/blogs/:id"
+            element={
+              <BlogView
+                blogs={blogs}
+                updateBlog={updateBlog}
+                deleteBlog={deleteBlog}
+              />
+            }
+          />
+        </Routes>
+      </div>
+    </Container>
   )
 }
 

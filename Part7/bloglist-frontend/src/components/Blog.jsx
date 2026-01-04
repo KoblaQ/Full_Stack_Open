@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import ListItem from '@mui/material/ListItemText'
 
 const Blog = ({ blog }) => {
   const blogStyle = {
@@ -12,7 +13,9 @@ const Blog = ({ blog }) => {
     <div style={blogStyle} className="blog">
       <div>
         <Link to={`/blogs/${blog.id}`}>
-          {blog.title} {blog.author}
+          <ListItem key={blog.id}>
+            {blog.title} {blog.author}
+          </ListItem>
         </Link>
       </div>
     </div>

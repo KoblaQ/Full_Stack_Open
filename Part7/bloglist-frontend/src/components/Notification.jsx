@@ -1,6 +1,8 @@
 import { useContext } from 'react'
 import NotificationContext from './NotificationContext'
 
+import { Alert } from '@mui/material'
+
 const Notification = () => {
   // const Notification = ({ message, type }) => {
   // if (message === null) {
@@ -11,9 +13,12 @@ const Notification = () => {
 
   if (notification) {
     return (
-      <div className={notification.type === 'error' ? 'error' : 'message'}>
+      <Alert severity={notification.type === 'error' ? 'error' : 'success'}>
         {notification.message}
-      </div>
+      </Alert>
+      // <div className={notification.type === 'error' ? 'error' : 'message'}>
+      //   {notification.message}
+      // </div>
       // <div className={type === 'error' ? 'error' : 'message'}>{message}</div>
     )
   }
