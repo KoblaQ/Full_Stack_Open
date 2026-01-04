@@ -10,3 +10,5 @@
 > The course covers testing, configuration and environment management, the use of databases for storing the application’s data amongst other things.
 
 ---
+
+![Certificate of completion for the first 7 parts of the course](fullstackopen_certificate.png)
