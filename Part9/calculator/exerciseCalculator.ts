@@ -8,7 +8,29 @@ interface Results {
   average: number
 }
 
-const calculateExercises = (hours: number[], target: number) => {
+interface ExerciseValues {
+  target: number
+  hours: number[]
+}
+
+const parseArguments = (args: string[]): ExerciseValues => {
+  if (args.length < 4) throw new Error('Not enough arguments')
+  // if (args.length > 4) throw new Error('Too many arguments')
+
+  const hours = args.slice(3).map(Number) // Slice from index 3 to get all exercise hours
+  // console.log(hours)
+
+  if (!isNaN(Number(args[2])) && hours.every((hour) => !isNaN(hour))) {
+    return {
+      target: Number(args[2]),
+      hours: hours.map((hour) => Number(hour)),
+    }
+  } else {
+    throw new Error('Provided values were not all numbers!')
+  }
+}
+
+const calculateExercises = (target: number, hours: number[]) => {
   const periodLength = hours.length
   const trainingDays = hours.filter((hour) => hour > 0).length
   const average = hours.reduce((a, b) => a + b, 0) / hours.length
@@ -41,7 +63,7 @@ const calculateExercises = (hours: number[], target: number) => {
       ratingDescription = 'nothing to rate here'
   }
 
-  return {
+  const result = {
     periodLength,
     trainingDays,
     success,
@@ -50,13 +72,17 @@ const calculateExercises = (hours: number[], target: number) => {
     target,
     average,
   }
+  console.log(result)
 }
 
 try {
-  console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+  // console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+  const { target, hours } = parseArguments(process.argv)
+  calculateExercises(target, hours)
 } catch (error: unknown) {
   let errorMessage = 'Something went wrong: '
   if (error instanceof Error) {
     errorMessage += error.message
   }
+  console.log(errorMessage)
 }
