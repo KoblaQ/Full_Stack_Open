@@ -4,7 +4,7 @@ interface Results {
   success: boolean
   rating: number
   ratingDescription: string
-  target: 2
+  target: number
   average: number
 }
 
@@ -30,7 +30,10 @@ const parseArguments = (args: string[]): ExerciseValues => {
   }
 }
 
-const calculateExercises = (target: number, hours: number[]) => {
+export const calculateExercises = (
+  target: number,
+  hours: number[]
+): Results => {
   const periodLength = hours.length
   const trainingDays = hours.filter((hour) => hour > 0).length
   const average = hours.reduce((a, b) => a + b, 0) / hours.length
@@ -38,7 +41,7 @@ const calculateExercises = (target: number, hours: number[]) => {
   const successfulDays = hours.filter((hour) => hour >= target).length
   const success = trainingDays === successfulDays
 
-  let rating = null
+  let rating = 0
   if (successfulDays < 3) {
     rating = 1
   } else if (successfulDays >= 3 && successfulDays < 6) {
@@ -73,6 +76,7 @@ const calculateExercises = (target: number, hours: number[]) => {
     average,
   }
   console.log(result)
+  return result
 }
 
 try {

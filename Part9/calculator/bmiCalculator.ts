@@ -6,7 +6,6 @@ interface bmiValues {
 }
 
 const parseArgumentss = (args: string[]): bmiValues => {
-  console.log('WORKING HERE')
   if (args.length < 4) throw new Error('Not enough arguments')
   if (args.length > 4) throw new Error('Too many arguments')
 
@@ -20,7 +19,7 @@ const parseArgumentss = (args: string[]): bmiValues => {
   }
 }
 
-const calculateBmi = (height: number, weight: number): Result => {
+export const calculateBmi = (height: number, weight: number): Result => {
   // console.log('height', height)
   // console.log('weight', weight)
   // return 'Normal range'
@@ -51,18 +50,21 @@ const calculateBmi = (height: number, weight: number): Result => {
   }
 
   console.log(bmiMessage)
+  return bmiMessage
 }
 
-try {
-  const { height, weight } = parseArgumentss(process.argv)
-  // console.log(calculateBmi(height, weight))
-  calculateBmi(height, weight)
-} catch (error: unknown) {
-  let errorMessage = 'Something went wrong: '
-  if (error instanceof Error) {
-    errorMessage += error.message
+if (require.main === module) {
+  try {
+    const { height, weight } = parseArgumentss(process.argv)
+    // console.log(calculateBmi(height, weight))
+    calculateBmi(height, weight)
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong: '
+    if (error instanceof Error) {
+      errorMessage += error.message
+    }
+    console.log(errorMessage)
   }
-  console.log(errorMessage)
 }
 
 // console.log(process.argv.length)
