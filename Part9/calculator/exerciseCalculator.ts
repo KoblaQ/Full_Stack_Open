@@ -8,22 +8,25 @@ interface Results {
   average: number;
 }
 
-interface ExerciseValues {
+export interface ExerciseValues {
   target: number;
-  hours: number[];
+  daily_exercises: number[];
 }
 
 const parseArguments = (args: string[]): ExerciseValues => {
   if (args.length < 4) throw new Error('Not enough arguments');
   // if (args.length > 4) throw new Error('Too many arguments')
 
-  const hours = args.slice(3).map(Number); // Slice from index 3 to get all exercise hours
+  const daily_exercises = args.slice(3).map(Number); // Slice from index 3 to get all exercise hours
   // console.log(hours)
 
-  if (!isNaN(Number(args[2])) && hours.every((hour) => !isNaN(hour))) {
+  if (
+    !isNaN(Number(args[2])) &&
+    daily_exercises.every((hour) => !isNaN(hour))
+  ) {
     return {
       target: Number(args[2]),
-      hours: hours.map((hour) => Number(hour)),
+      daily_exercises: daily_exercises.map((hour) => Number(hour)),
     };
   } else {
     throw new Error('Provided values were not all numbers!');
@@ -32,13 +35,16 @@ const parseArguments = (args: string[]): ExerciseValues => {
 
 export const calculateExercises = (
   targetHours: number,
-  hours: number[]
+  daily_exercises: number[]
 ): Results => {
-  const periodLength = hours.length;
-  const trainingDays = hours.filter((hour) => hour > 0).length;
-  const average = hours.reduce((a, b) => a + b, 0) / hours.length;
+  const periodLength = daily_exercises.length;
+  const trainingDays = daily_exercises.filter((hour) => hour > 0).length;
+  const average =
+    daily_exercises.reduce((a, b) => a + b, 0) / daily_exercises.length;
   const target = targetHours;
-  const successfulDays = hours.filter((hour) => hour >= target).length;
+  const successfulDays = daily_exercises.filter(
+    (hour) => hour >= target
+  ).length;
   const success = trainingDays === successfulDays;
 
   let rating = 0;
@@ -79,14 +85,18 @@ export const calculateExercises = (
   return result;
 };
 
-try {
-  // console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
-  const { target, hours } = parseArguments(process.argv);
-  calculateExercises(target, hours);
-} catch (error: unknown) {
-  let errorMessage = 'Something went wrong: ';
-  if (error instanceof Error) {
-    errorMessage += error.message;
+if (require.main === module) {
+  try {
+    // console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+    const { target, daily_exercises: daily_exercises } = parseArguments(
+      process.argv
+    );
+    calculateExercises(target, daily_exercises);
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong: ';
+    if (error instanceof Error) {
+      errorMessage += error.message;
+    }
+    console.log(errorMessage);
   }
-  console.log(errorMessage);
 }

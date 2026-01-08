@@ -1,0 +1,56 @@
+POST http://localhost:3001/exercises
+Content-Type: application/json
+
+{
+  "daily_exercises": [1, 0, 2, 0, 3, 0, 2.5],
+  "target": 2.5
+}
+
+###
+
+POST http://localhost:3001/exercises
+Content-Type: application/json
+
+{
+  "target": 2.5
+}
+
+
+###
+
+POST http://localhost:3001/exercises
+Content-Type: application/json
+
+{
+  "daily_exercises": [1, 0, 2, 0, 3, 0, 2.5]
+}
+
+
+###
+
+POST http://localhost:3001/exercises
+Content-Type: application/json
+
+{
+  "daily_exercises": [1, 0, 2, "h", 3, 0, 2.5],
+  "target": 2.5
+}
+
+
+###
+POST http://localhost:3001/exercises
+Content-Type: application/json
+
+{
+  "daily_exercises": [1, 0, 2, "5", 3, 0, 2.5],
+  "target": 2.5
+}
+###
+
+POST http://localhost:3001/exercises
+Content-Type: application/json
+
+{
+  "daily_exercises": [],
+  "target": 2.5
+}
