@@ -1,7 +1,13 @@
 // import diaryData from '../../data/entries.json'; // Nolonger needed because we handled the type asertion
 import diaries from '../../data/entries'; // Converted json file to a ts file
 
-import { DiaryEntry, NonSensitiveDiaryEntry } from '../types';
+import {
+  DiaryEntry,
+  NonSensitiveDiaryEntry,
+  // Visibility,
+  // Weather,
+  NewDiaryEntry,
+} from '../types';
 
 // const diaries: DiaryEntry[] = diaryData as DiaryEntry[];  // Type assertion not necessary anymore
 
@@ -30,12 +36,34 @@ const getEntries = (): DiaryEntry[] => {
   return diaries;
 };
 
-const addDiary = () => {
-  return null;
+const findById = (id: number): DiaryEntry | undefined => {
+  const entry = diaries.find((d) => d.id === id);
+  return entry;
+};
+
+const addDiary = (
+  // date: string,
+  // weather: Weather,
+  // visibility: Visibility,
+  // comment: string
+  entry: NewDiaryEntry
+): DiaryEntry => {
+  const newDiaryEntry = {
+    id: Math.max(...diaries.map((d) => d.id)) + 1,
+    // date,
+    // weather,
+    // visibility,
+    // comment,
+    ...entry,
+  };
+
+  diaries.push(newDiaryEntry);
+  return newDiaryEntry;
 };
 
 export default {
   getEntries,
   addDiary,
   getNonSensitiveEntries,
+  findById,
 };
