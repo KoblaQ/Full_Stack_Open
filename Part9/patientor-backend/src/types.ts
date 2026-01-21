@@ -1,3 +1,6 @@
+import { z } from 'zod';
+import { NewEntrySchema } from './utils';
+
 export type Diagnosis = {
   code: string;
   name: string;
@@ -19,6 +22,9 @@ export type Patient = {
   ssn: string;
 };
 
+// infer from the schema
+export type NewPatientEntry = z.infer<typeof NewEntrySchema>;
+
 export type NonSensitivePatientData = Omit<Patient, 'ssn'>;
 
-export type NewPatientEntry = Omit<Patient, 'id'>;
+// export type NewPatientEntry = Omit<Patient, 'id'>; // REPLACED WITH THE ZOD INFER
