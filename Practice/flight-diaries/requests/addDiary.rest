@@ -3,7 +3,18 @@ Content-Type: application/json
 
 {
 	"date": "2026-01-01",
+	"weather": "rainy",
+	"visibility": "great",
+	"comment" : "good stuff but scary"
+}
+
+###
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+	"date": "2026-01-01",
 	"weather": "sunny",
-	"visibility": "awesome",
+	"visibility": "splendid",
 	"comment" : "good stuff but scary"
 }
