@@ -19,106 +19,43 @@ interface CoursePartBase {
   name: string;
   exerciseCount: number;
 }
-
-// Includes the description property
-interface CoursePartBaseDescription extends CoursePartBase {
+interface CoursePartBasic extends CoursePartBase {
+  // name: string;
+  // exerciseCount: number;
   description: string;
-}
-
-interface CoursePartBasic extends CoursePartBaseDescription {
-  // description: string;
   kind: 'basic';
 }
 
 interface CoursePartGroup extends CoursePartBase {
+  // name: string;
+  // exerciseCount: number;
   groupProjectCount: number;
   kind: 'group';
 }
 
-interface CoursePartBackground extends CoursePartBaseDescription {
-  // description: string;
+interface CoursePartBackgrond extends CoursePartBase {
+  // name: string;
+  // exerciseCount: number;
+  description: string;
   backgroundMaterial: string;
   kind: 'background';
 }
 
-interface CoursePartSpecial extends CoursePartBaseDescription {
-  requirements: string[];
-  kind: 'special';
-}
+type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackgrond; // Type union for all the types
 
-type CoursePart =
-  | CoursePartBasic
-  | CoursePartGroup
-  | CoursePartBackground
-  | CoursePartSpecial; // Type union for all the types
-
-interface PartProps {
-  part: CoursePart;
-}
+const Content = (props: ContentProps) => {
+  return props.courseParts.map((part) => (
+    <p key={part.name}>
+      {part.name} {part.exerciseCount}
+    </p>
+  ));
+};
 
 // Helper function for exhaustive type checking
 const assertNever = (value: never): never => {
   throw new Error(
-    `Unhandled discrimitated union member: ${JSON.stringify(value)}`
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
   );
-};
-
-const Part = ({ part }: PartProps) => {
-  // const part = props.kind;
-  switch (part.kind) {
-    case 'basic':
-      return (
-        <div>
-          <h3>
-            {part.name} {part.exerciseCount}
-          </h3>
-          <p>
-            <em>{part.description}</em>
-          </p>
-        </div>
-      );
-    case 'group':
-      return (
-        <div>
-          <h3>
-            {part.name} {part.exerciseCount}
-          </h3>
-          <p>project exercises {part.groupProjectCount}</p>
-        </div>
-      );
-    case 'background':
-      return (
-        <div>
-          <h3>
-            {part.name} {part.exerciseCount}
-          </h3>
-          <p>
-            <em>{part.description}</em>
-          </p>
-          <p> materials: {part.backgroundMaterial}</p>
-        </div>
-      );
-    case 'special':
-      return (
-        <div>
-          <h3>{part.name}</h3>
-          <p>
-            <em>{part.description}</em>
-          </p>
-          <p>required skills: {part.requirements}</p>
-        </div>
-      );
-    default:
-      return assertNever(part);
-  }
-};
-
-const Content = (props: ContentProps) => {
-  return props.courseParts.map((part) => (
-    <div key={part.name}>
-      <Part part={part} />
-    </div>
-  ));
 };
 
 interface TotalProps {
@@ -131,7 +68,7 @@ const Total = (props: TotalProps) => {
 const App = () => {
   const courseName = 'Half Stack application development';
 
-  const courseParts: CoursePart[] = [
+  const courseParts = [
     {
       name: 'Fundamentals',
       exerciseCount: 10,
@@ -161,15 +98,7 @@ const App = () => {
     {
       name: 'TypeScript in frontend',
       exerciseCount: 10,
-      description: 'a hard part',
       kind: 'basic',
-    },
-    {
-      name: 'Backend development',
-      exerciseCount: 21,
-      description: 'Typing the backend',
-      requirements: ['nodejs', 'jest'],
-      kind: 'special',
     },
   ];
   // const courseParts = [
@@ -186,6 +115,23 @@ const App = () => {
   //     exerciseCount: 14,
   //   },
   // ];
+
+  courseParts.forEach((part) => {
+    switch (part.kind) {
+      case 'basic':
+        console.log(part.description);
+        break;
+      case 'group':
+        console.log(part.groupProjectCount);
+        break;
+      case 'background':
+        console.log(part.backgroundMaterial);
+        break;
+      default:
+        return assertNever(part);
+        break;
+    }
+  });
 
   const totalExercises = courseParts.reduce(
     (sum, part) => sum + part.exerciseCount,
