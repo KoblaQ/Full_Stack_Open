@@ -59,7 +59,7 @@ interface PartProps {
 // Helper function for exhaustive type checking
 const assertNever = (value: never): never => {
   throw new Error(
-    `Unhandled discrimitated union member: ${JSON.stringify(value)}`
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`,
   );
 };
 
@@ -189,7 +189,7 @@ const App = () => {
 
   const totalExercises = courseParts.reduce(
     (sum, part) => sum + part.exerciseCount,
-    0
+    0,
   );
 
   return (
