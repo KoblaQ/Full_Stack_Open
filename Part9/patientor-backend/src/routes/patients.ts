@@ -1,7 +1,13 @@
 import express, { NextFunction, Response, Request } from 'express';
 import patientService from '../services/patientService';
-import { Patient, NewPatientEntry, NonSensitivePatient } from '../types';
-import { NewEntrySchema } from '../utils';
+import {
+  Patient,
+  NewPatientEntry,
+  NonSensitivePatient,
+  NewEntries,
+  EntryWithoutId,
+} from '../types';
+import { NewEntrySchema, toNewEntry } from '../utils';
 
 import { z } from 'zod';
 
@@ -30,6 +36,15 @@ const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
   }
 };
 
+const newEntriesParser = (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    toNewEntry(req.body);
+    next();
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
 const errorMiddleWare = (
   error: unknown,
   _req: Request,
@@ -50,6 +65,18 @@ router.post(
   (req: Request<unknown, unknown, NewPatientEntry>, res: Response<Patient>) => {
     const addedEntry = patientService.addPatient(req.body);
     res.json(addedEntry);
+  },
+);
+
+router.post(
+  '/:id/entries',
+  newEntriesParser,
+  (
+    req: Request<{ id: string }, unknown, EntryWithoutId>,
+    res: Response<NewEntries>,
+  ) => {
+    const addedEntries = patientService.addEntries(req.params.id, req.body);
+    res.json(addedEntries);
   },
 );
 

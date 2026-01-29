@@ -1,5 +1,69 @@
-import { NewPatientEntry, Gender } from './types';
+import { NewPatientEntry, Gender, EntryWithoutId } from './types';
 import { z } from 'zod';
+
+export const NewEntrySchema = z.object({
+  name: z.string(),
+  dateOfBirth: z.iso.date(),
+  gender: z.enum(Gender),
+  occupation: z.string(),
+  ssn: z.string(),
+});
+
+export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
+  return NewEntrySchema.parse(object);
+};
+
+export const HealthCheckEntrySchema = z.object({
+  description: z.string(),
+  date: z.string(),
+  specialist: z.string(),
+  diagnosisCodes: z.array(z.string()).optional(),
+  type: z.literal('HealthCheck'),
+  healthCheckRating: z.number(),
+});
+
+export const HospitalEntrySchema = z.object({
+  description: z.string(),
+  date: z.string(),
+  specialist: z.string(),
+  diagnosisCodes: z.array(z.string()).optional(),
+  // type: z.string(),
+  type: z.literal('Hospital'),
+  discharge: z.object({
+    date: z.string(),
+    criteria: z.string(),
+  }),
+});
+
+export const OccupationalHealthcareEntrySchema = z.object({
+  description: z.string(),
+  date: z.string(),
+  specialist: z.string(),
+  diagnosisCodes: z.array(z.string()).optional(),
+  type: z.literal('OccupationalHealthcare'), // Literal because the values need to be exactly the same
+  employerName: z.string(),
+  sickLeave: z
+    .object({
+      startDate: z.string(),
+      endDate: z.string(),
+    })
+    .optional(),
+});
+
+export const toNewEntry = (object: unknown): EntryWithoutId => {
+  switch ((object as { type: string }).type) {
+    case 'HealthCheck':
+      return HealthCheckEntrySchema.parse(object);
+    case 'Hospital':
+      return HospitalEntrySchema.parse(object);
+    case 'OccupationalHealthcare':
+      return OccupationalHealthcareEntrySchema.parse(object);
+    default:
+      throw new Error(
+        'Incorrect or missing type: ' + (object as { type: string }).type,
+      );
+  }
+};
 
 // const isString = (text: unknown): text is string => {
 //   return typeof text === 'string' || text instanceof String;
@@ -49,18 +113,6 @@ import { z } from 'zod';
 //   }
 //   return ssn;
 // };
-
-export const NewEntrySchema = z.object({
-  name: z.string(),
-  dateOfBirth: z.iso.date(),
-  gender: z.enum(Gender),
-  occupation: z.string(),
-  ssn: z.string(),
-});
-
-export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
-  return NewEntrySchema.parse(object);
-};
 
 // const toNewPatientEntry = (object: unknown): NewPatientEntry => {
 //   console.log(object); // placeholder for object not being used yet

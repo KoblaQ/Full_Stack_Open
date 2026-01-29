@@ -1,0 +1,47 @@
+POST http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "description": "Random checkup",
+  "date": "2026-01-01",
+  "specialist": "Dr. Edem",
+  "type": "HealthCheck",
+  "healthCheckRating": 0,
+  "diagnosisCodes": ["Z57.1", "Z74.3"]
+}
+###
+POST http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "description": "Quaterly checkup",
+  "date": "2026-01-01",
+  "specialist": "Dr. Edem",
+  "type": "OccupationalHealthcare",
+  "healthCheckRating": 0,
+  "diagnosisCodes": ["Z57.1", "Z74.3"],
+  "sickLeave": {
+    "startDate": "2026-01-01",
+    "endDate": "2026-01-01"
+  },
+  "employerName": "HyPD"
+}
+###
+POST http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "description": "Test checkup",
+  "date": "2026-01-01",
+  "specialist": "Dr. Edem Q",
+  "type": "Hospital",
+  "diagnosisCodes": ["Z57.1", "Z74.3"],
+  "discharge": {
+    "date": "2026-01-01",
+    "criteria": "He flew to the moon"
+  }
+}
+###
+GET http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667
+
+

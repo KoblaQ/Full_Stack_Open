@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { NewEntrySchema } from './utils';
+import {
+  NewEntrySchema,
+  HospitalEntrySchema,
+  OccupationalHealthcareEntrySchema,
+  HealthCheckEntrySchema,
+} from './utils';
 
 export interface Diagnosis {
   code: string;
@@ -55,6 +60,12 @@ interface HospitalEntry extends BaseEntry {
   };
 }
 
+// export enum EntryType {
+//   Hospital = HospitalEntry,
+//   OccupationalHealthcare = 'OccupationalHealthcare',
+//   HealthCheck = 'HealthCheck',
+// }
+
 export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
@@ -72,12 +83,28 @@ export interface Patient {
 
 // infer from the schema
 export type NewPatientEntry = z.infer<typeof NewEntrySchema>;
+export type NewHospitalEntries = z.infer<typeof HospitalEntrySchema>;
+export type NewOccupationalHealthcareEntry = z.infer<
+  typeof OccupationalHealthcareEntrySchema
+>;
+export type NewHealthCheckEntry = z.infer<typeof HealthCheckEntrySchema>;
+
+// Union of all entries
+export type NewEntries =
+  | NewHealthCheckEntry
+  | NewOccupationalHealthcareEntry
+  | NewHospitalEntries;
 
 // export type NonSensitivePatientData = Omit<Patient, 'ssn'>;
-
 export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
 
 // export type NewPatientEntry = Omit<Patient, 'id'>; // REPLACED WITH THE ZOD INFER
-export type EntryWithoutId = Omit<Entry, 'id'>;
+// export type EntryWithoutId = Omit<Entry, 'id'>;
 
 // export type EntryWithoutId = UnionOmit<Entry, 'id'>;
+// Define special omit for unions
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown
+  ? Omit<T, K>
+  : never;
+// Define Entry without the 'id' property
+export type EntryWithoutId = UnionOmit<Entry, 'id'>;
