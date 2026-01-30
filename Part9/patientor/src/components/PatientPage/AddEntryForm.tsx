@@ -49,6 +49,9 @@ const AddEntryForm = ({
   const [healthCheckRating, setHealthCheckRating] = useState('');
   const [diagnosisCodes, setDiagnosisCodes] = useState('');
   const [type, setType] = useState<EntryType>(EntryType.HealthCheck);
+  const [discharge, setDischarge] = useState({ date: '', criteria: '' });
+  const [employerName, setEmployerName] = useState('');
+  const [sickLeave, setSickLeave] = useState({ startDate: '', endDate: '' });
   const [errorMessage, setErrorMessage] = useState<string>();
 
   const onTypeChange = (event: SelectChangeEvent<string>) => {
@@ -65,12 +68,11 @@ const AddEntryForm = ({
 
   const submitNewEntry = async (event: SyntheticEvent) => {
     event.preventDefault();
-    // setType('Healthcheck');
-    const firstEntriesObject = {
+    const baseEntriesObject = {
       description,
       date,
       specialist,
-      healthCheckRating: Number(healthCheckRating),
+      type,
       diagnosisCodes: diagnosisCodes
         ? diagnosisCodes.split(',').map((code) => code.trim())
         : undefined,
@@ -84,16 +86,30 @@ const AddEntryForm = ({
     // };
     switch (type) {
       case 'HealthCheck':
-        entriesObject = { ...firstEntriesObject, type: 'HealthCheck' };
+        entriesObject = {
+          ...baseEntriesObject,
+          type: 'HealthCheck',
+          healthCheckRating: Number(healthCheckRating),
+        };
         break;
-      // case 'Hospital':
-      //   entriesObject = { ...firstEntriesObject, type: 'Hospital' };
-      //   break;
-      // case 'Hospital':
-      //   entriesObject = {
-      //     ...firstEntriesObject,
-      //     type: 'OccupationalHealthcare',
-      //   };
+      case 'Hospital':
+        entriesObject = {
+          ...baseEntriesObject,
+          type: 'Hospital',
+          discharge: { date: discharge.date, criteria: discharge.criteria },
+        };
+        break;
+      case 'OccupationalHealthcare':
+        entriesObject = {
+          ...baseEntriesObject,
+          type: 'OccupationalHealthcare',
+          employerName,
+          sickLeave: {
+            startDate: sickLeave.startDate,
+            endDate: sickLeave.endDate,
+          },
+        };
+        break;
       default:
         return null;
     }
@@ -140,6 +156,19 @@ const AddEntryForm = ({
       <form onSubmit={submitNewEntry}>
         <div>
           <div>
+            <InputLabel style={{ marginTop: 20 }}>Entry Type</InputLabel>
+            <Select
+              label="EntryType"
+              fullWidth
+              value={type}
+              onChange={onTypeChange}
+            >
+              {entryOptions.map((option) => (
+                <MenuItem key={option.label} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
             <TextField
               label="Description"
               variant="outlined"
@@ -164,27 +193,6 @@ const AddEntryForm = ({
               onChange={({ target }) => setSpecialist(target.value)}
             />
 
-            <InputLabel style={{ marginTop: 20 }}>Entry Type</InputLabel>
-            <Select
-              label="EntryType"
-              fullWidth
-              value={type}
-              onChange={onTypeChange}
-            >
-              {entryOptions.map((option) => (
-                <MenuItem key={option.label} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-
-            <TextField
-              label="Healthcheck rating"
-              variant="outlined"
-              fullWidth
-              sx={{ padding: 1 }}
-              onChange={({ target }) => setHealthCheckRating(target.value)}
-            />
             <TextField
               label="Diagnosis codes"
               variant="outlined"
@@ -192,6 +200,72 @@ const AddEntryForm = ({
               sx={{ padding: 1 }}
               onChange={({ target }) => setDiagnosisCodes(target.value)}
             />
+
+            {type === 'HealthCheck' && (
+              <TextField
+                label="Healthcheck rating"
+                variant="outlined"
+                fullWidth
+                sx={{ padding: 1 }}
+                onChange={({ target }) => setHealthCheckRating(target.value)}
+              />
+            )}
+
+            {type === 'OccupationalHealthcare' && (
+              <div>
+                <TextField
+                  label="Employer Name"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ padding: 1 }}
+                  onChange={({ target }) => setEmployerName(target.value)}
+                />
+                <InputLabel style={{ marginTop: 20 }}>Sickleave</InputLabel>
+                <TextField
+                  label="Start Date"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ padding: 1 }}
+                  onChange={({ target }) =>
+                    setSickLeave({ ...sickLeave, startDate: target.value })
+                  }
+                />
+                <TextField
+                  label="End Date"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ padding: 1 }}
+                  onChange={({ target }) =>
+                    setSickLeave({ ...sickLeave, endDate: target.value })
+                  }
+                />
+              </div>
+            )}
+
+            {type === 'Hospital' && (
+              <div>
+                <InputLabel>Discharge</InputLabel>
+
+                <TextField
+                  label="Date"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ padding: 1 }}
+                  onChange={({ target }) =>
+                    setDischarge({ ...discharge, date: target.value })
+                  }
+                />
+                <TextField
+                  label="Criteria"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ padding: 1 }}
+                  onChange={({ target }) =>
+                    setDischarge({ ...discharge, criteria: target.value })
+                  }
+                />
+              </div>
+            )}
           </div>
 
           <Grid container justifyContent={'space-between'}>
