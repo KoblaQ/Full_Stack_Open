@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import patientService from '../../services/patients';
 import diagnosisService from '../../services/diagnoses';
 import { useParams } from 'react-router-dom';
+
+import AddEntryForm from './AddEntryForm';
+
 import { Button } from '@mui/material';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
@@ -184,6 +187,7 @@ const EntryDetails: React.FC<EntryProps> = ({
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
+  const [visible, setVisible] = useState<boolean>(false);
   const id = useParams().id;
 
   // Get the patient
@@ -200,6 +204,10 @@ const PatientPage = () => {
   // console.log(diagnoses);
 
   // console.log(patient);
+
+  const handleToggleVisibility = () => {
+    setVisible(!visible);
+  };
   return (
     <div>
       <h3>
@@ -209,11 +217,21 @@ const PatientPage = () => {
       <p>ssh: {patient?.ssn}</p>
       <p>occupation: {patient?.occupation}</p>
 
+      {visible && (
+        <AddEntryForm
+          id={id}
+          handleToggleVisibility={handleToggleVisibility}
+          patient={patient}
+          setPatient={setPatient}
+        />
+      )}
       {patient?.entries && patient?.entries.length > 0 && <h3>entries</h3>}
       {patient?.entries.map((entry) => (
         <EntryDetails entry={entry} key={entry.id} diagnoses={diagnoses} />
       ))}
-      <Button variant="contained">Add New Entry</Button>
+      <Button variant="contained" onClick={handleToggleVisibility}>
+        Add New Entry
+      </Button>
     </div>
   );
 };
