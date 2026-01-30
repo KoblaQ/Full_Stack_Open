@@ -223,6 +223,7 @@ const PatientPage = () => {
           handleToggleVisibility={handleToggleVisibility}
           patient={patient}
           setPatient={setPatient}
+          diagnoses={diagnoses}
         />
       )}
       {patient?.entries && patient?.entries.length > 0 && <h3>entries</h3>}

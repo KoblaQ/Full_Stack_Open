@@ -1,9 +1,10 @@
 import { useState, SyntheticEvent, SetStateAction, Dispatch } from 'react';
 import patientService from '../../services/patients';
-import { EntryWithoutId, Patient } from '../../types';
+import { EntryWithoutId, Patient, Diagnosis } from '../../types';
 import {
   Button,
   Box,
+  Checkbox,
   TextField,
   Grid,
   InputLabel,
@@ -11,6 +12,7 @@ import {
   MenuItem,
   SelectChangeEvent,
   Alert,
+  ListItemText,
 } from '@mui/material';
 import { red, green } from '@mui/material/colors';
 import axios from 'axios';
@@ -20,6 +22,7 @@ interface Props {
   id: string | undefined;
   setPatient: Dispatch<SetStateAction<Patient | null>>;
   patient: Patient | null;
+  diagnoses: Diagnosis[] | null;
 }
 
 enum EntryType {
@@ -32,22 +35,34 @@ interface EntryOption {
   value: EntryType;
   label: string;
 }
+
 const entryOptions: EntryOption[] = Object.values(EntryType).map((v) => ({
   value: v,
   label: v.toString(),
 }));
+
+// interface DiagnosisOption {
+//   value: Diagnosis['code'];
+//   label: string;
+// }
+
+// const diagnosisOptions: Diagnosis[] = diagnoses.map(v => ({
+// 	value: v,
+// 	label: v.tostring
+// }))
 
 const AddEntryForm = ({
   id,
   handleToggleVisibility,
   patient,
   setPatient,
+  diagnoses,
 }: Props) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [specialist, setSpecialist] = useState('');
   const [healthCheckRating, setHealthCheckRating] = useState('');
-  const [diagnosisCodes, setDiagnosisCodes] = useState('');
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
   const [type, setType] = useState<EntryType>(EntryType.HealthCheck);
   const [discharge, setDischarge] = useState({ date: '', criteria: '' });
   const [employerName, setEmployerName] = useState('');
@@ -73,9 +88,10 @@ const AddEntryForm = ({
       date,
       specialist,
       type,
-      diagnosisCodes: diagnosisCodes
-        ? diagnosisCodes.split(',').map((code) => code.trim())
-        : undefined,
+      diagnosisCodes,
+      //   diagnosisCodes: diagnosisCodes
+      //     ? diagnosisCodes.split(',').map((code) => code.trim())
+      //     : undefined,
     };
     let entriesObject: EntryWithoutId | undefined;
 
@@ -132,7 +148,7 @@ const AddEntryForm = ({
         setDate('');
         setSpecialist('');
         setHealthCheckRating('');
-        setDiagnosisCodes('');
+        setDiagnosisCodes([]);
         setType(EntryType.HealthCheck); // Sets HealthCheck as default
         handleToggleVisibility();
       }
@@ -148,6 +164,7 @@ const AddEntryForm = ({
       // console.log(errorMessage);
     }
   };
+
   return (
     <Box sx={{ border: 'dotted', padding: 1, borderRadius: 2 }}>
       {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
@@ -178,11 +195,13 @@ const AddEntryForm = ({
             />
 
             <TextField
-              label="Date"
+              // label="Date"
               variant="outlined"
               fullWidth
               sx={{ padding: 1 }}
               onChange={({ target }) => setDate(target.value)}
+              type="date"
+              required
             />
 
             <TextField
@@ -193,13 +212,36 @@ const AddEntryForm = ({
               onChange={({ target }) => setSpecialist(target.value)}
             />
 
-            <TextField
+            <InputLabel id="Diagnosis-codes">Diagnosis Codes</InputLabel>
+            <Select
+              label="Diagnosis codes"
+              id="Diagnosis-codes"
+              value={diagnosisCodes}
+              multiple
+              fullWidth
+              renderValue={(selected) => selected.join(', ')}
+              onChange={({ target }) => {
+                const value = target.value;
+                setDiagnosisCodes(
+                  typeof value === 'string' ? value.split(',') : value,
+                );
+              }}
+            >
+              {diagnoses?.map((diagnosis) => (
+                <MenuItem key={diagnosis.code} value={diagnosis.code}>
+                  <Checkbox checked={diagnosisCodes.includes(diagnosis.code)} />
+                  {diagnosis.code}: <ListItemText primary={diagnosis.name} />
+                </MenuItem>
+              ))}
+            </Select>
+
+            {/* <TextField
               label="Diagnosis codes"
               variant="outlined"
               fullWidth
               sx={{ padding: 1 }}
               onChange={({ target }) => setDiagnosisCodes(target.value)}
-            />
+            /> */}
 
             {type === 'HealthCheck' && (
               <TextField
@@ -222,7 +264,9 @@ const AddEntryForm = ({
                 />
                 <InputLabel style={{ marginTop: 20 }}>Sickleave</InputLabel>
                 <TextField
-                  label="Start Date"
+                  // label="Start Date"
+                  type="date"
+                  required
                   variant="outlined"
                   fullWidth
                   sx={{ padding: 1 }}
@@ -231,7 +275,9 @@ const AddEntryForm = ({
                   }
                 />
                 <TextField
-                  label="End Date"
+                  // label="End Date"
+                  type="date"
+                  required
                   variant="outlined"
                   fullWidth
                   sx={{ padding: 1 }}
@@ -247,7 +293,8 @@ const AddEntryForm = ({
                 <InputLabel>Discharge</InputLabel>
 
                 <TextField
-                  label="Date"
+                  type="date"
+                  required
                   variant="outlined"
                   fullWidth
                   sx={{ padding: 1 }}
