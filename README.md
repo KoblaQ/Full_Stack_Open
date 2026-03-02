@@ -12,3 +12,4 @@
 ---
 
 ![Certificate of completion for the first 7 parts of the course](/certificates/fullstackopen_certificate.png)
+![Certificate of completion for part 9 the course](/certificates/certificate-typescript.png)
